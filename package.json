@@ -1,0 +1,52 @@
+{
+  "name": "@baozi/mcp-server",
+  "version": "4.0.0",
+  "description": "MCP server for Baozi prediction markets on Solana - full protocol coverage with market creation and AI agent network",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "baozi-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run build",
+    "test": "tsx src/__tests__/index.test.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@solana/web3.js": "^1.98.0",
+    "bs58": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/bs58": "^4.0.4",
+    "@types/node": "^20.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "baozi",
+    "solana",
+    "prediction-markets",
+    "claude",
+    "ai-agent",
+    "transaction-builder",
+    "mainnet"
+  ],
+  "author": "Baozi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baozi-bet/baozi-mcp"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

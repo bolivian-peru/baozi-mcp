@@ -1,0 +1,20 @@
+# Don't publish source files
+src/
+
+# Don't publish tests
+__tests__/
+*.test.ts
+*.spec.ts
+test-all-tools.mjs
+
+# Don't publish development docs
+IMPLEMENTATION_PLAN.md
+AUDIT_REPORT.md
+IDL_COVERAGE.md
+IDL_REFERENCE.md
+
+# Don't publish TypeScript config
+tsconfig.json
+
+# Don't publish node_modules
+node_modules/
