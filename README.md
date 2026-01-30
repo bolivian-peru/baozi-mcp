@@ -7,7 +7,7 @@
 
 ## Overview
 
-This MCP server enables AI agents to interact with [Baozi](https://baozi.bet) prediction markets on Solana. It provides **66 tools** for:
+This MCP server enables AI agents to interact with [Baozi](https://baozi.ooo) prediction markets on Solana. It provides **66 tools** for:
 
 - **Market Discovery** - List and filter boolean/race markets
 - **Quote Calculation** - Expected payouts with odds analysis
@@ -23,6 +23,17 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
                               ▼
                          User Wallet ──► Signs ──► Solana Network
 ```
+
+## Baozi Platform Links
+
+| Page | URL | Description |
+|------|-----|-------------|
+| **Homepage** | [baozi.ooo](https://baozi.ooo) | Main platform |
+| **Labs** | [baozi.ooo/labs](https://baozi.ooo/labs) | Community-created markets |
+| **Official** | [baozi.ooo/official](https://baozi.ooo/official) | Official curated markets |
+| **Leaderboard** | [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard) | Top traders |
+| **Portfolio** | [baozi.ooo/portfolio](https://baozi.ooo/portfolio) | Your positions |
+| **Create Market** | [baozi.ooo/create](https://baozi.ooo/create) | Create new markets |
 
 ## Installation
 
@@ -188,7 +199,7 @@ npx @baozi/mcp-server
 {
   "name": "get_quote",
   "arguments": {
-    "market": "E71aYMXbzoC7nBeQFjMpZCiLKKNb7bqjYrXR3TnFjmQ",
+    "market": "zDFuzWfkJVtmnxv2q668kfSPMq9byTsf36fo6zZ3nNy",
     "side": "Yes",
     "amount": 1.0
   }
@@ -200,10 +211,10 @@ npx @baozi/mcp-server
 {
   "name": "build_bet_transaction",
   "arguments": {
-    "market": "E71aYMXbzoC7nBeQFjMpZCiLKKNb7bqjYrXR3TnFjmQ",
+    "market": "zDFuzWfkJVtmnxv2q668kfSPMq9byTsf36fo6zZ3nNy",
     "outcome": "yes",
     "amount_sol": 1.0,
-    "user_wallet": "9rbVMeTHKpdWwTnjXZRp62RKuTKCsKBKNMtoLZ67PPVr",
+    "user_wallet": "YourWalletAddressHere",
     "affiliate_code": "CLAUDE"
   }
 }
@@ -280,14 +291,18 @@ npm run typecheck
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `HELIUS_RPC` | Custom RPC endpoint | Helius mainnet |
-| `DEBUG` | Enable debug logging | false |
+| `HELIUS_RPC_URL` | Custom RPC endpoint | Public Solana RPC |
+| `SOLANA_RPC_URL` | Alternative RPC | Public Solana RPC |
+| `SOLANA_NETWORK` | Network selection | mainnet-beta |
 
 ## Resources
 
-- **Website**: https://baozi.bet
-- **API Docs**: https://baozi.bet/docs/api
-- **GitHub**: https://github.com/baozi-markets/baozi-mcp
+- **Platform**: [baozi.ooo](https://baozi.ooo)
+- **Labs Markets**: [baozi.ooo/labs](https://baozi.ooo/labs)
+- **Official Markets**: [baozi.ooo/official](https://baozi.ooo/official)
+- **Leaderboard**: [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard)
+- **GitHub**: [github.com/bolivian-peru/baozi-mcp](https://github.com/bolivian-peru/baozi-mcp)
+- **Solscan**: [Program on Solscan](https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY)
 
 ## License
 
