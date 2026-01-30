@@ -31,6 +31,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 | **Homepage** | [baozi.ooo](https://baozi.ooo) | Main platform |
 | **Labs** | [baozi.ooo/labs](https://baozi.ooo/labs) | Community-created markets |
 | **Official** | [baozi.ooo/official](https://baozi.ooo/official) | Official curated markets |
+| **Private** | [baozi.ooo/private](https://baozi.ooo/private) | Invite-only markets |
 | **Leaderboard** | [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard) | Top traders |
 | **Portfolio** | [baozi.ooo/portfolio](https://baozi.ooo/portfolio) | Your positions |
 | **Create Market** | [baozi.ooo/create](https://baozi.ooo/create) | Create new markets |
