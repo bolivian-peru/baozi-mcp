@@ -153,23 +153,58 @@ CRITICAL: Agent NEVER holds private keys. User ALWAYS signs.
 ## Parimutuel Market Rules (MUST ENFORCE)
 
 ### The Golden Rule
-Bettors must NEVER have access to ANY information that could inform the outcome while betting is still open.
+**Bettors must NEVER have access to ANY information that could inform the outcome while betting is still open.**
+
+Pari-mutuel = all bets pool together. Winners split losers' stakes.
+If someone bets with insider info, they extract value from honest bettors.
+**FAIR MARKETS > MORE MARKETS.**
 
 ### Type A: Event-Based Markets
 - Single point-in-time outcome (game, announcement, award)
 - **RULE: Close betting 24 HOURS BEFORE the event**
 - Examples: Super Bowl winner, FOMC rate decision, Oscar winner
 
+✅ "Super Bowl Feb 8 6:30pm" → close Feb 7 6:30pm
+❌ "Super Bowl Feb 8" → close Feb 8 noon (only 6.5h buffer!)
+
 ### Type B: Measurement-Period Markets
 - Data collected over a period (charts, weekly stats)
 - **RULE: Close betting BEFORE the measurement period STARTS**
-- Examples: Weekly BTC price change, Monthly ETH gas average
+- Examples: Netflix weekly Top 10, Billboard Hot 100
+
+✅ "Netflix Top 10 Jan 6-12" → close Jan 5
+❌ "Netflix Top 10 Jan 6-12" → close Jan 13 (AFTER period!)
+
+### Economic Data Rule
+- Only create markets for FUTURE measurement periods
+- If we're IN the measurement period → DON'T CREATE
+- Example: Can't create "Q1 2026 GDP" in February 2026 (we're in Q1!)
+
+### Official Data Sources (MUST USE)
+
+| Category | Primary | Backup |
+|----------|---------|--------|
+| Crypto | CoinGecko | CoinMarketCap |
+| Sports | Official League | ESPN |
+| Charts | Netflix/Billboard Official | FlixPatrol |
+| Economic | BLS.gov / Fed | FRED |
+| Weather | NWS | Weather.gov |
+
+### Validation Checklist - REJECT IF ANY FAIL
+
+1. ✅ Is outcome objectively verifiable? → If NO, REJECT
+2. ✅ Is data source specified? → If NO, REJECT
+3. ✅ Can bettor gain info advantage before close? → If YES, REJECT
+4. ✅ Is timing correct (24h buffer / before period starts)? → If NO, REJECT
+5. ✅ Is this a FUTURE event/period? → If NO, REJECT
 
 ### Common Violations to REJECT
 - "Will BTC hit $100k today?" (event already started)
 - "Weekly chart market" closing mid-week
 - Markets about past events
 - Vague resolution criteria
+- No official data source specified
+- Subjective questions ("Who is the best?")
 
 ## Affiliate System
 
