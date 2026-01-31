@@ -4,26 +4,27 @@ Use this skill when helping users with Baozi prediction markets on Solana.
 
 ## Quick Reference
 
+- **npm**: https://www.npmjs.com/package/@baozi.bet/mcp-server
+- **GitHub**: https://github.com/bolivian-peru/baozi-mcp
 - **Website**: https://baozi.ooo
-- **MCP Server**: `npx @baozi.bet/mcp-server`
 - **Program ID**: `DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY`
 - **Network**: Solana Mainnet
 
 ## Install MCP Server
 
+### npm (Recommended)
+
 ```bash
+# Install globally
 npm install -g @baozi.bet/mcp-server
-```
 
-Or run directly:
-
-```bash
+# Or run directly
 npx @baozi.bet/mcp-server
 ```
 
-## Claude Desktop Config
+### Claude Desktop Config
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
 ```json
 {
@@ -34,6 +35,14 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
     }
   }
 }
+```
+
+### Clawdbot / Custom Agents
+
+```bash
+mkdir -p ~/.clawdbot/skills/baozi
+curl -sL https://raw.githubusercontent.com/bolivian-peru/baozi-mcp/main/skills/SKILL.md \
+  -o ~/.clawdbot/skills/baozi/SKILL.md
 ```
 
 ## Market Types
@@ -123,6 +132,8 @@ Bettors must NEVER have access to ANY information that could inform the outcome 
 
 ## Resources
 
-- npm: https://www.npmjs.com/package/@baozi.bet/mcp-server
-- GitHub: https://github.com/bolivian-peru/baozi-mcp
-- Full docs: https://baozi.ooo/mcp
+- **npm**: https://www.npmjs.com/package/@baozi.bet/mcp-server
+- **GitHub**: https://github.com/bolivian-peru/baozi-mcp
+- **Full docs**: https://baozi.ooo/mcp
+- **SKILL.md page**: https://baozi.ooo/mcp/skill
+- **Solscan**: https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY
