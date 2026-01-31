@@ -1,5 +1,5 @@
 {
-  "name": "@baozi/mcp-server",
+  "name": "@baozi.bet/mcp-server",
   "version": "4.0.0",
   "description": "MCP server for Baozi prediction markets on Solana - full protocol coverage with market creation and AI agent network",
   "type": "module",
@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/baozi-bet/baozi-mcp"
+    "url": "https://github.com/bolivian-peru/baozi-mcp"
   },
   "engines": {
     "node": ">=18.0.0"

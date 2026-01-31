@@ -1,9 +1,37 @@
-# @baozi/mcp-server
+# @baozi.bet/mcp-server
 
 **MCP (Model Context Protocol) server for Baozi prediction markets on Solana**
 
-[![npm version](https://img.shields.io/npm/v/@baozi/mcp-server.svg)](https://www.npmjs.com/package/@baozi/mcp-server)
+[![npm version](https://img.shields.io/npm/v/@baozi.bet/mcp-server.svg)](https://www.npmjs.com/package/@baozi.bet/mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## Quick Install
+
+```bash
+# Install globally
+npm install -g @baozi.bet/mcp-server
+
+# Or run directly
+npx @baozi.bet/mcp-server
+```
+
+## Claude Desktop Setup
+
+Add to your config file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "baozi": {
+      "command": "npx",
+      "args": ["@baozi.bet/mcp-server"]
+    }
+  }
+}
+```
 
 ## Overview
 
@@ -22,49 +50,6 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
                               │
                               ▼
                          User Wallet ──► Signs ──► Solana Network
-```
-
-## Baozi Platform Links
-
-| Page | URL | Description |
-|------|-----|-------------|
-| **Official Markets** | [baozi.ooo](https://baozi.ooo) | Main curated markets |
-| **Labs** | [baozi.ooo/labs](https://baozi.ooo/labs) | Community-created markets |
-| **Create Lab Market** | [baozi.ooo/labs/create](https://baozi.ooo/labs/create) | Create community market |
-| **Private Tables** | [baozi.ooo/private](https://baozi.ooo/private) | Invite-only markets |
-| **Create Private** | [baozi.ooo/private/create](https://baozi.ooo/private/create) | Create private market |
-| **My Bets** | [baozi.ooo/my-bets](https://baozi.ooo/my-bets) | Your positions & bets |
-| **Leaderboard** | [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard) | Top traders |
-| **Affiliate** | [baozi.ooo/affiliate](https://baozi.ooo/affiliate) | Earn referral commissions |
-| **Creator Hub** | [baozi.ooo/creator](https://baozi.ooo/creator) | Creator dashboard |
-| **Points** | [baozi.ooo/points](https://baozi.ooo/points) | Points & rewards |
-
-## Installation
-
-### Claude Desktop
-
-Add to your Claude Desktop config:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "baozi": {
-      "command": "npx",
-      "args": ["@baozi/mcp-server"]
-    }
-  }
-}
-```
-
-### Claude Code
-
-Add to your project's MCP configuration or run directly:
-
-```bash
-npx @baozi/mcp-server
 ```
 
 ## Tool Categories (66 Tools)
@@ -173,14 +158,10 @@ npx @baozi/mcp-server
 | `validate_market_params` | Validate against v6.2 rules |
 | `validate_bet` | Validate bet parameters |
 
-### Simulation (1 tool)
+### Resolution Status (4 tools)
 | Tool | Description |
 |------|-------------|
 | `simulate_transaction` | Pre-sign simulation check |
-
-### Resolution Status (3 tools)
-| Tool | Description |
-|------|-------------|
 | `get_resolution_status` | Market resolution state |
 | `get_disputed_markets` | List disputed markets |
 | `get_markets_awaiting_resolution` | Pending resolution markets |
@@ -203,7 +184,7 @@ npx @baozi/mcp-server
 {
   "name": "get_quote",
   "arguments": {
-    "market": "MarketPublicKeyHere",
+    "market": "E71aYMXbzoC7nBeQFjMpZCiLKKNb7bqjYrXR3TnFjmQ",
     "side": "Yes",
     "amount": 1.0
   }
@@ -215,47 +196,14 @@ npx @baozi/mcp-server
 {
   "name": "build_bet_transaction",
   "arguments": {
-    "market": "MarketPublicKeyHere",
+    "market": "E71aYMXbzoC7nBeQFjMpZCiLKKNb7bqjYrXR3TnFjmQ",
     "outcome": "yes",
     "amount_sol": 1.0,
-    "user_wallet": "YourWalletAddressHere",
+    "user_wallet": "9rbVMeTHKpdWwTnjXZRp62RKuTKCsKBKNMtoLZ67PPVr",
     "affiliate_code": "CLAUDE"
   }
 }
 ```
-
-### Validate Market Before Creation
-```json
-{
-  "name": "validate_market_params",
-  "arguments": {
-    "question": "Will BTC reach $100k in 2026?",
-    "closing_time": "2026-06-01T00:00:00Z",
-    "market_type": "event",
-    "event_time": "2026-07-01T00:00:00Z"
-  }
-}
-```
-
-## Transaction Signing
-
-The MCP server returns unsigned transactions. Integration options:
-
-### 1. Phantom Deep Link
-```
-phantom://sign?transaction={base64_tx}
-```
-
-### 2. Wallet Adapter (Web)
-```typescript
-const tx = Transaction.from(Buffer.from(base64Tx, 'base64'));
-await wallet.signAndSendTransaction(tx);
-```
-
-### 3. Automated Wallets (Agents)
-- [Turnkey](https://turnkey.com) - Policy-controlled signing
-- [Crossmint](https://crossmint.com) - AI agent wallets
-- [Privy](https://privy.io) - Embedded wallets
 
 ## Technical Details
 
@@ -275,39 +223,14 @@ await wallet.signAndSendTransaction(tx);
 | Lab | 3% | 0.04 SOL |
 | Private | 2% | 0.04 SOL |
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Run locally
-npm start
-
-# Type check
-npm run typecheck
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `HELIUS_RPC_URL` | Custom RPC endpoint | Public Solana RPC |
-| `SOLANA_RPC_URL` | Alternative RPC | Public Solana RPC |
-| `SOLANA_NETWORK` | Network selection | mainnet-beta |
-
 ## Resources
 
-- **Platform**: [baozi.ooo](https://baozi.ooo)
-- **Labs**: [baozi.ooo/labs](https://baozi.ooo/labs)
-- **Private Tables**: [baozi.ooo/private](https://baozi.ooo/private)
-- **My Bets**: [baozi.ooo/my-bets](https://baozi.ooo/my-bets)
-- **Leaderboard**: [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard)
-- **GitHub**: [github.com/bolivian-peru/baozi-mcp](https://github.com/bolivian-peru/baozi-mcp)
-- **Solscan**: [Program on Solscan](https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY)
+- **Website**: https://baozi.ooo
+- **Full MCP Docs**: https://baozi.ooo/mcp
+- **SKILL.md**: [skills/SKILL.md](./skills/SKILL.md)
+- **npm**: https://www.npmjs.com/package/@baozi.bet/mcp-server
+- **GitHub**: https://github.com/bolivian-peru/baozi-mcp
+- **Solscan**: https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY
 
 ## License
 
