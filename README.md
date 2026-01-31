@@ -232,7 +232,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 | **SKILL.md** | https://github.com/bolivian-peru/baozi-mcp/blob/main/skills/SKILL.md |
 | **npm** | https://www.npmjs.com/package/@baozi.bet/mcp-server |
 | **GitHub** | https://github.com/bolivian-peru/baozi-mcp |
-| **Twitter/X** | https://x.com/baikiemtien |
+| **Twitter/X** | https://x.com/baozibet |
 | **Solscan** | https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY |
 
 ## License
