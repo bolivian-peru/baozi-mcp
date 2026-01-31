@@ -225,12 +225,15 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 
 ## Resources
 
-- **Website**: https://baozi.ooo
-- **Full MCP Docs**: https://baozi.ooo/mcp
-- **SKILL.md**: [skills/SKILL.md](./skills/SKILL.md)
-- **npm**: https://www.npmjs.com/package/@baozi.bet/mcp-server
-- **GitHub**: https://github.com/bolivian-peru/baozi-mcp
-- **Solscan**: https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY
+| Resource | Link |
+|----------|------|
+| **Website** | https://baozi.ooo |
+| **MCP Docs** | https://baozi.ooo/mcp |
+| **SKILL.md** | https://github.com/bolivian-peru/baozi-mcp/blob/main/skills/SKILL.md |
+| **npm** | https://www.npmjs.com/package/@baozi.bet/mcp-server |
+| **GitHub** | https://github.com/bolivian-peru/baozi-mcp |
+| **Twitter/X** | https://x.com/baikiemtien |
+| **Solscan** | https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY |
 
 ## License
 
