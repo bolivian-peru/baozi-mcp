@@ -28,13 +28,16 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 
 | Page | URL | Description |
 |------|-----|-------------|
-| **Homepage** | [baozi.ooo](https://baozi.ooo) | Main platform |
+| **Official Markets** | [baozi.ooo](https://baozi.ooo) | Main curated markets |
 | **Labs** | [baozi.ooo/labs](https://baozi.ooo/labs) | Community-created markets |
-| **Official** | [baozi.ooo/official](https://baozi.ooo/official) | Official curated markets |
-| **Private** | [baozi.ooo/private](https://baozi.ooo/private) | Invite-only markets |
+| **Create Lab Market** | [baozi.ooo/labs/create](https://baozi.ooo/labs/create) | Create community market |
+| **Private Tables** | [baozi.ooo/private](https://baozi.ooo/private) | Invite-only markets |
+| **Create Private** | [baozi.ooo/private/create](https://baozi.ooo/private/create) | Create private market |
+| **My Bets** | [baozi.ooo/my-bets](https://baozi.ooo/my-bets) | Your positions & bets |
 | **Leaderboard** | [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard) | Top traders |
-| **Portfolio** | [baozi.ooo/portfolio](https://baozi.ooo/portfolio) | Your positions |
-| **Create Market** | [baozi.ooo/create](https://baozi.ooo/create) | Create new markets |
+| **Affiliate** | [baozi.ooo/affiliate](https://baozi.ooo/affiliate) | Earn referral commissions |
+| **Creator Hub** | [baozi.ooo/creator](https://baozi.ooo/creator) | Creator dashboard |
+| **Points** | [baozi.ooo/points](https://baozi.ooo/points) | Points & rewards |
 
 ## Installation
 
@@ -200,7 +203,7 @@ npx @baozi/mcp-server
 {
   "name": "get_quote",
   "arguments": {
-    "market": "zDFuzWfkJVtmnxv2q668kfSPMq9byTsf36fo6zZ3nNy",
+    "market": "MarketPublicKeyHere",
     "side": "Yes",
     "amount": 1.0
   }
@@ -212,7 +215,7 @@ npx @baozi/mcp-server
 {
   "name": "build_bet_transaction",
   "arguments": {
-    "market": "zDFuzWfkJVtmnxv2q668kfSPMq9byTsf36fo6zZ3nNy",
+    "market": "MarketPublicKeyHere",
     "outcome": "yes",
     "amount_sol": 1.0,
     "user_wallet": "YourWalletAddressHere",
@@ -299,8 +302,9 @@ npm run typecheck
 ## Resources
 
 - **Platform**: [baozi.ooo](https://baozi.ooo)
-- **Labs Markets**: [baozi.ooo/labs](https://baozi.ooo/labs)
-- **Official Markets**: [baozi.ooo/official](https://baozi.ooo/official)
+- **Labs**: [baozi.ooo/labs](https://baozi.ooo/labs)
+- **Private Tables**: [baozi.ooo/private](https://baozi.ooo/private)
+- **My Bets**: [baozi.ooo/my-bets](https://baozi.ooo/my-bets)
 - **Leaderboard**: [baozi.ooo/leaderboard](https://baozi.ooo/leaderboard)
 - **GitHub**: [github.com/bolivian-peru/baozi-mcp](https://github.com/bolivian-peru/baozi-mcp)
 - **Solscan**: [Program on Solscan](https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY)
