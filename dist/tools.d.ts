@@ -55,8 +55,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -116,8 +115,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -184,8 +182,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -246,8 +243,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -313,8 +309,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -397,8 +392,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -480,8 +474,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -553,8 +546,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -629,8 +621,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -687,8 +678,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -748,8 +738,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -809,8 +798,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -870,8 +858,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -934,8 +921,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -998,8 +984,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1075,8 +1060,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1149,8 +1133,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1222,8 +1205,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1289,8 +1271,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1368,8 +1349,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1432,8 +1412,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1499,8 +1478,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1566,8 +1544,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1630,8 +1607,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1698,8 +1674,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1766,8 +1741,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1830,8 +1804,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1897,8 +1870,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -1964,8 +1936,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2028,8 +1999,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2092,8 +2062,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2156,8 +2125,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2223,8 +2191,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2290,8 +2257,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2357,8 +2323,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2424,8 +2389,7 @@ export declare const TOOLS: ({
             user_to_add?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2488,8 +2452,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2555,8 +2518,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2622,8 +2584,7 @@ export declare const TOOLS: ({
             user_to_add?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2689,8 +2650,7 @@ export declare const TOOLS: ({
             vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2704,11 +2664,11 @@ export declare const TOOLS: ({
     inputSchema: {
         type: "object";
         properties: {
-            new_display_name: {
+            display_name: {
                 type: string;
                 description: string;
             };
-            new_creator_fee_bps: {
+            default_fee_bps: {
                 type: string;
                 description: string;
             };
@@ -2756,7 +2716,6 @@ export declare const TOOLS: ({
             vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
-            display_name?: undefined;
             creator_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
@@ -2817,8 +2776,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
             reason?: undefined;
@@ -2889,8 +2847,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             reason?: undefined;
             authority_wallet?: undefined;
         };
@@ -2959,8 +2916,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             reason?: undefined;
             authority_wallet?: undefined;
         };
@@ -3026,8 +2982,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
         };
@@ -3093,8 +3048,7 @@ export declare const TOOLS: ({
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
-            new_display_name?: undefined;
-            new_creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
             new_closing_time?: undefined;
             new_resolution_time?: undefined;
         };

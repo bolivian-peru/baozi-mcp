@@ -12,14 +12,14 @@
  * - Simulate transactions before signing
  *
  * Usage:
- *   npx @baozi/mcp-server
+ *   npx @baozi.bet/mcp-server
  *
  * Or add to Claude Desktop config:
  *   {
  *     "mcpServers": {
  *       "baozi": {
  *         "command": "npx",
- *         "args": ["@baozi/mcp-server"]
+ *         "args": ["@baozi.bet/mcp-server"]
  *       }
  *     }
  *   }

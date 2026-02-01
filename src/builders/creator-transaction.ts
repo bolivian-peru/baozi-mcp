@@ -107,12 +107,12 @@ export async function buildCreateCreatorProfileTransaction(params: {
 
 /**
  * Build update_creator_profile transaction
- * Updates display name and/or fee settings
+ * Updates display name and fee settings (both required per IDL)
  * IDL Accounts: creator_profile, owner (NO config!)
  */
 export async function buildUpdateCreatorProfileTransaction(params: {
-  newDisplayName?: string;
-  newCreatorFeeBps?: number;
+  displayName: string;
+  defaultFeeBps: number;
   creatorWallet: string;
   connection?: Connection;
 }): Promise<{ transaction: Transaction; serializedTx: string }> {
@@ -120,53 +120,25 @@ export async function buildUpdateCreatorProfileTransaction(params: {
   const creatorPubkey = new PublicKey(params.creatorWallet);
   const creatorProfilePda = deriveCreatorProfilePda(creatorPubkey);
 
-  // Build optional fields
-  const displayNameBytes = params.newDisplayName
-    ? Buffer.from(params.newDisplayName, 'utf8')
-    : null;
-
-  if (displayNameBytes && displayNameBytes.length > 32) {
+  // Validate display name (max 32 chars)
+  const displayNameBytes = Buffer.from(params.displayName, 'utf8');
+  if (displayNameBytes.length > 32) {
     throw new Error('Display name must be 32 bytes or less');
   }
 
-  if (params.newCreatorFeeBps !== undefined && params.newCreatorFeeBps > 50) {
+  // Validate fee (max 50 bps = 0.5%)
+  if (params.defaultFeeBps > 50) {
     throw new Error('Creator fee cannot exceed 50 bps (0.5%)');
   }
 
-  // Instruction data: discriminator + Option<String> + Option<u16>
-  // Option<T> in Borsh: 1 byte (0=None, 1=Some) + T if Some
-  let dataSize = 8;
-  // display_name option
-  dataSize += 1 + (displayNameBytes ? 4 + displayNameBytes.length : 0);
-  // creator_fee_bps option
-  dataSize += 1 + (params.newCreatorFeeBps !== undefined ? 2 : 0);
-
-  const data = Buffer.alloc(dataSize);
-  let offset = 0;
-  DISCRIMINATORS.update_creator_profile.copy(data, offset);
-  offset += 8;
-
-  // Option<String> for display_name
-  if (displayNameBytes) {
-    data.writeUInt8(1, offset); // Some
-    offset += 1;
-    data.writeUInt32LE(displayNameBytes.length, offset);
-    offset += 4;
-    displayNameBytes.copy(data, offset);
-    offset += displayNameBytes.length;
-  } else {
-    data.writeUInt8(0, offset); // None
-    offset += 1;
-  }
-
-  // Option<u16> for creator_fee_bps
-  if (params.newCreatorFeeBps !== undefined) {
-    data.writeUInt8(1, offset); // Some
-    offset += 1;
-    data.writeUInt16LE(params.newCreatorFeeBps, offset);
-  } else {
-    data.writeUInt8(0, offset); // None
-  }
+  // Instruction data: discriminator + display_name (String) + default_fee_bps (u16)
+  // Both are REQUIRED per IDL (not Option<T>)
+  const nameLen = displayNameBytes.length;
+  const data = Buffer.alloc(8 + 4 + nameLen + 2);
+  DISCRIMINATORS.update_creator_profile.copy(data, 0);
+  data.writeUInt32LE(nameLen, 8);
+  displayNameBytes.copy(data, 12);
+  data.writeUInt16LE(params.defaultFeeBps, 12 + nameLen);
 
   // IDL Accounts: creator_profile, owner (NO config!)
   const keys = [

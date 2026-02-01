@@ -886,15 +886,15 @@ export const TOOLS = [
   },
   {
     name: 'build_update_creator_profile_transaction',
-    description: 'Build transaction to update creator profile.',
+    description: 'Build transaction to update creator profile. Both display_name and default_fee_bps are required.',
     inputSchema: {
       type: 'object' as const,
       properties: {
-        new_display_name: { type: 'string', description: 'New display name (optional)' },
-        new_creator_fee_bps: { type: 'number', description: 'New creator fee (optional)' },
+        display_name: { type: 'string', description: 'Display name (max 32 chars)' },
+        default_fee_bps: { type: 'number', description: 'Default fee in basis points (max 50 = 0.5%)' },
         creator_wallet: { type: 'string', description: 'Creator wallet' },
       },
-      required: ['creator_wallet'],
+      required: ['display_name', 'default_fee_bps', 'creator_wallet'],
     },
   },
   {
@@ -1922,15 +1922,15 @@ export async function handleTool(
       }
 
       case 'build_update_creator_profile_transaction': {
-        const newDisplayName = args.new_display_name as string | undefined;
-        const newCreatorFeeBps = args.new_creator_fee_bps as number | undefined;
+        const displayName = args.display_name as string;
+        const defaultFeeBps = args.default_fee_bps as number;
         const creatorWallet = args.creator_wallet as string;
-        if (!creatorWallet) {
-          return errorResponse('creator_wallet is required');
+        if (!displayName || defaultFeeBps === undefined || !creatorWallet) {
+          return errorResponse('display_name, default_fee_bps, and creator_wallet are all required');
         }
         const result = await buildUpdateCreatorProfileTransaction({
-          newDisplayName,
-          newCreatorFeeBps,
+          displayName,
+          defaultFeeBps,
           creatorWallet,
         });
         return successResponse({

@@ -23,12 +23,12 @@ export declare function buildCreateCreatorProfileTransaction(params: {
 }>;
 /**
  * Build update_creator_profile transaction
- * Updates display name and/or fee settings
+ * Updates display name and fee settings (both required per IDL)
  * IDL Accounts: creator_profile, owner (NO config!)
  */
 export declare function buildUpdateCreatorProfileTransaction(params: {
-    newDisplayName?: string;
-    newCreatorFeeBps?: number;
+    displayName: string;
+    defaultFeeBps: number;
     creatorWallet: string;
     connection?: Connection;
 }): Promise<{
