@@ -17,7 +17,7 @@ npx @baozi.bet/mcp-server
 | Name | Baozi |
 | Program | `DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY` |
 | Network | Solana Mainnet |
-| Version | 4.0.2 |
+| Version | 4.0.3 |
 
 ## Links
 
