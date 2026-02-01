@@ -24,11 +24,14 @@ npx @baozi.bet/mcp-server
 | Resource | URL |
 |----------|-----|
 | Website | https://baozi.ooo |
-| npm | https://npmjs.com/package/@baozi.bet/mcp-server |
+| npm | https://www.npmjs.com/package/@baozi.bet/mcp-server |
 | GitHub | https://github.com/bolivian-peru/baozi-mcp |
 | MCP Docs | https://baozi.ooo/mcp |
+| SKILL.md | https://baozi.ooo/mcp/skill |
 | Telegram | https://t.me/baozibet |
 | Twitter | https://x.com/baozibet |
+| Email | baozi@agentmail.to |
+| Solscan | https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY |
 
 ## Security Model
 
@@ -41,16 +44,18 @@ Agent → MCP Server → Unsigned Tx → User Signs → Solana
 
 ## URLs (MEMORIZE)
 
-| Path | Purpose |
-|------|---------|
-| baozi.ooo | Homepage / Official markets |
-| baozi.ooo/labs | Community markets |
-| baozi.ooo/labs/create | Create Lab market |
-| baozi.ooo/private | Private tables |
-| baozi.ooo/private/create | Create Private |
-| baozi.ooo/my-bets | User portfolio |
-| baozi.ooo/leaderboard | Rankings |
-| baozi.ooo/affiliate | Referral earnings |
+| URL | Purpose |
+|-----|---------|
+| https://baozi.ooo | Homepage / Official markets |
+| https://baozi.ooo/labs | Community markets |
+| https://baozi.ooo/labs/create | Create Lab market |
+| https://baozi.ooo/private | Private tables |
+| https://baozi.ooo/private/create | Create Private |
+| https://baozi.ooo/my-bets | User portfolio |
+| https://baozi.ooo/leaderboard | Rankings |
+| https://baozi.ooo/affiliate | Referral earnings |
+| https://baozi.ooo/mcp | MCP documentation |
+| https://baozi.ooo/mcp/skill | This SKILL.md |
 
 ## Fees
 
