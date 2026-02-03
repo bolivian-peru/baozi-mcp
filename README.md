@@ -35,7 +35,7 @@ Add to your config file:
 
 ## Overview
 
-This MCP server enables AI agents to interact with [Baozi](https://baozi.ooo) prediction markets on Solana. It provides **66 tools** for:
+This MCP server enables AI agents to interact with [Baozi](https://baozi.bet) prediction markets on Solana. It provides **66 tools** for:
 
 - **Market Discovery** - List and filter boolean/race markets
 - **Quote Calculation** - Expected payouts with odds analysis
@@ -227,8 +227,8 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 
 | Resource | Link |
 |----------|------|
-| **Website** | https://baozi.ooo |
-| **MCP Docs** | https://baozi.ooo/mcp |
+| **Website** | https://baozi.bet |
+| **MCP Docs** | https://baozi.bet/mcp |
 | **SKILL.md** | https://github.com/bolivian-peru/baozi-mcp/blob/main/skills/SKILL.md |
 | **npm** | https://www.npmjs.com/package/@baozi.bet/mcp-server |
 | **GitHub** | https://github.com/bolivian-peru/baozi-mcp |

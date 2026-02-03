@@ -308,7 +308,7 @@ export async function handleResource(uri: string): Promise<{
                 marketLayers: MARKET_LAYER_NAMES,
                 links: {
                   website: 'https://baozi.bet',
-                  api: 'https://baozi.ooo/api/v4',
+                  api: 'https://baozi.bet/api/v4',
                   explorer: `https://solscan.io/account/${PROGRAM_ID.toBase58()}${IS_MAINNET ? '' : '?cluster=devnet'}`,
                 },
                 fetchedAt: new Date().toISOString(),
