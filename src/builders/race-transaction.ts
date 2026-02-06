@@ -118,22 +118,17 @@ export async function buildRaceBetTransaction(params: {
     data.writeUInt8(params.outcomeIndex, 8);
     data.writeBigUInt64LE(amountLamports, 9);
 
+    // For Anchor optional accounts, always include whitelist with PROGRAM_ID as placeholder
     const keys = [
       { pubkey: CONFIG_PDA, isSigner: false, isWritable: false },
       { pubkey: raceMarketPubkey, isSigner: false, isWritable: true },
       { pubkey: positionPda, isSigner: false, isWritable: true },
       { pubkey: affiliatePubkey, isSigner: false, isWritable: true },
       { pubkey: raceReferralPda, isSigner: false, isWritable: true },
-    ];
-
-    if (whitelistPda) {
-      keys.push({ pubkey: whitelistPda, isSigner: false, isWritable: false });
-    }
-
-    keys.push(
+      { pubkey: whitelistPda || PROGRAM_ID, isSigner: false, isWritable: false },
       { pubkey: userPubkey, isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
-    );
+      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+    ];
 
     instruction = new TransactionInstruction({
       programId: PROGRAM_ID,
@@ -147,20 +142,15 @@ export async function buildRaceBetTransaction(params: {
     data.writeUInt8(params.outcomeIndex, 8);
     data.writeBigUInt64LE(amountLamports, 9);
 
+    // For Anchor optional accounts, always include whitelist with PROGRAM_ID as placeholder
     const keys = [
       { pubkey: CONFIG_PDA, isSigner: false, isWritable: false },
       { pubkey: raceMarketPubkey, isSigner: false, isWritable: true },
       { pubkey: positionPda, isSigner: false, isWritable: true },
-    ];
-
-    if (whitelistPda) {
-      keys.push({ pubkey: whitelistPda, isSigner: false, isWritable: false });
-    }
-
-    keys.push(
+      { pubkey: whitelistPda || PROGRAM_ID, isSigner: false, isWritable: false },
       { pubkey: userPubkey, isSigner: true, isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
-    );
+      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+    ];
 
     instruction = new TransactionInstruction({
       programId: PROGRAM_ID,

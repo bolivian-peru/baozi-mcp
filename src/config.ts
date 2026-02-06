@@ -50,12 +50,18 @@ const [derivedConfigPda] = PublicKey.findProgramAddressSync(
 );
 export const CONFIG_PDA = derivedConfigPda;
 
-// Derive Sol Treasury PDA
+// Derive Sol Treasury PDA (for claim operations)
 const [derivedSolTreasuryPda] = PublicKey.findProgramAddressSync(
   [SEEDS.SOL_TREASURY],
   PROGRAM_ID
 );
 export const SOL_TREASURY_PDA = derivedSolTreasuryPda;
+
+// Config Treasury - the treasury address stored in GlobalConfig
+// This is where market creation fees are sent (matches config.treasury on-chain)
+export const CONFIG_TREASURY = new PublicKey(
+  process.env.BAOZI_CONFIG_TREASURY || 'EZDLboJMwNrHmMtvdpyXfg1duxPNr4LjrRczHfDRhgVN'
+);
 
 // =============================================================================
 // ACCOUNT DISCRIMINATORS (first 8 bytes of sha256 hash)

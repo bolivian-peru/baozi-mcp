@@ -18,7 +18,7 @@ import {
 import {
   PROGRAM_ID,
   CONFIG_PDA,
-  SOL_TREASURY_PDA,
+  CONFIG_TREASURY,
   SEEDS,
   RPC_ENDPOINT,
 } from '../config.js';
@@ -215,7 +215,7 @@ export async function buildCreateLabMarketTransaction(
   const keys = [
     { pubkey: CONFIG_PDA, isSigner: false, isWritable: true },
     { pubkey: marketPda, isSigner: false, isWritable: true },
-    { pubkey: SOL_TREASURY_PDA, isSigner: false, isWritable: true },
+    { pubkey: CONFIG_TREASURY, isSigner: false, isWritable: true },
     { pubkey: creatorPubkey, isSigner: true, isWritable: true },
     // For optional accounts, pass PROGRAM_ID as placeholder if not present
     { pubkey: hasCreatorProfile ? creatorProfilePda : PROGRAM_ID, isSigner: false, isWritable: hasCreatorProfile },
@@ -300,7 +300,7 @@ export async function buildCreatePrivateMarketTransaction(
     { pubkey: CONFIG_PDA, isSigner: false, isWritable: true },
     { pubkey: marketPda, isSigner: false, isWritable: true },
     { pubkey: whitelistPda, isSigner: false, isWritable: true },
-    { pubkey: SOL_TREASURY_PDA, isSigner: false, isWritable: true },
+    { pubkey: CONFIG_TREASURY, isSigner: false, isWritable: true },
     { pubkey: creatorPubkey, isSigner: true, isWritable: true },
     { pubkey: hasCreatorProfile ? creatorProfilePda : PROGRAM_ID, isSigner: false, isWritable: hasCreatorProfile },
     { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
@@ -429,7 +429,7 @@ export async function buildCreateRaceMarketTransaction(
     { pubkey: CONFIG_PDA, isSigner: false, isWritable: true },
     { pubkey: raceMarketPda, isSigner: false, isWritable: true },
     { pubkey: hasCreatorProfile ? creatorProfilePda : PROGRAM_ID, isSigner: false, isWritable: hasCreatorProfile },
-    { pubkey: SOL_TREASURY_PDA, isSigner: false, isWritable: true },
+    { pubkey: CONFIG_TREASURY, isSigner: false, isWritable: true },
     { pubkey: creatorPubkey, isSigner: true, isWritable: true },
     { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
   ];

@@ -23,6 +23,7 @@ export declare const SEEDS: {
 };
 export declare const CONFIG_PDA: PublicKey;
 export declare const SOL_TREASURY_PDA: PublicKey;
+export declare const CONFIG_TREASURY: PublicKey;
 export declare const DISCRIMINATORS: {
     readonly MARKET: Buffer<ArrayBuffer>;
     readonly MARKET_BASE58: "FcJn7zePJQ1";

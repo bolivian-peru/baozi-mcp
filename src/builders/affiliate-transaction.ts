@@ -63,7 +63,7 @@ export async function buildRegisterAffiliateTransaction(params: {
 
   // Derive affiliate PDA
   const [affiliatePda] = PublicKey.findProgramAddressSync(
-    [SEEDS.AFFILIATE, Buffer.from(params.code)],
+    [SEEDS.AFFILIATE, userPubkey.toBuffer()],
     PROGRAM_ID
   );
 
@@ -135,7 +135,7 @@ export async function buildToggleAffiliateTransaction(params: {
 
   // Derive affiliate PDA
   const [affiliatePda] = PublicKey.findProgramAddressSync(
-    [SEEDS.AFFILIATE, Buffer.from(params.code)],
+    [SEEDS.AFFILIATE, userPubkey.toBuffer()],
     PROGRAM_ID
   );
 
