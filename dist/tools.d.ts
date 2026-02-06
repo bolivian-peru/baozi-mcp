@@ -51,6 +51,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -111,6 +113,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -178,6 +182,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -239,6 +245,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -305,6 +313,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -388,6 +398,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -470,6 +482,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -542,6 +556,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -617,6 +633,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -674,6 +692,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -685,6 +705,72 @@ export declare const TOOLS: ({
             authority_wallet?: undefined;
         };
         required: never[];
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            question: {
+                type: string;
+                description: string;
+            };
+            layer: {
+                type: string;
+                enum: string[];
+                description: string;
+            };
+            status?: undefined;
+            publicKey?: undefined;
+            market?: undefined;
+            side?: undefined;
+            amount?: undefined;
+            outcomeIndex?: undefined;
+            closing_time?: undefined;
+            resolution_time?: undefined;
+            market_type?: undefined;
+            event_time?: undefined;
+            measurement_start?: undefined;
+            measurement_end?: undefined;
+            creator_wallet?: undefined;
+            invite_hash?: undefined;
+            outcomes?: undefined;
+            wallet?: undefined;
+            code?: undefined;
+            agentName?: undefined;
+            count?: undefined;
+            outcome?: undefined;
+            amount_sol?: undefined;
+            user_wallet?: undefined;
+            affiliate_code?: undefined;
+            outcome_index?: undefined;
+            position?: undefined;
+            claims?: undefined;
+            race_market?: undefined;
+            active?: undefined;
+            transaction?: undefined;
+            proposer_wallet?: undefined;
+            resolver_wallet?: undefined;
+            caller_wallet?: undefined;
+            winning_outcome_index?: undefined;
+            disputer_wallet?: undefined;
+            vote_yes?: undefined;
+            voter_wallet?: undefined;
+            vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
+            user_to_add?: undefined;
+            user_to_remove?: undefined;
+            display_name?: undefined;
+            creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
+            new_closing_time?: undefined;
+            new_resolution_time?: undefined;
+            reason?: undefined;
+            authority_wallet?: undefined;
+        };
+        required: string[];
     };
 } | {
     name: string;
@@ -734,6 +820,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -794,6 +882,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -854,6 +944,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -917,6 +1009,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -980,6 +1074,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1056,6 +1152,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1129,6 +1227,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1201,6 +1301,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1267,6 +1369,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1345,6 +1449,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1408,6 +1514,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1474,6 +1582,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1540,6 +1650,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1603,6 +1715,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1670,6 +1784,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1737,6 +1853,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1800,6 +1918,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1866,6 +1986,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1932,6 +2054,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -1995,6 +2119,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2058,6 +2184,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2121,6 +2249,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2187,6 +2317,8 @@ export declare const TOOLS: ({
             winning_outcome_index?: undefined;
             disputer_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2253,6 +2385,144 @@ export declare const TOOLS: ({
             winning_outcome_index?: undefined;
             disputer_wallet?: undefined;
             vote_yes?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
+            user_to_add?: undefined;
+            user_to_remove?: undefined;
+            display_name?: undefined;
+            creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
+            new_closing_time?: undefined;
+            new_resolution_time?: undefined;
+            reason?: undefined;
+            authority_wallet?: undefined;
+        };
+        required: string[];
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            market: {
+                type: string;
+                description: string;
+            };
+            new_vote_yes: {
+                type: string;
+                description: string;
+            };
+            voter_wallet: {
+                type: string;
+                description: string;
+            };
+            status?: undefined;
+            layer?: undefined;
+            publicKey?: undefined;
+            side?: undefined;
+            amount?: undefined;
+            outcomeIndex?: undefined;
+            question?: undefined;
+            closing_time?: undefined;
+            resolution_time?: undefined;
+            market_type?: undefined;
+            event_time?: undefined;
+            measurement_start?: undefined;
+            measurement_end?: undefined;
+            creator_wallet?: undefined;
+            invite_hash?: undefined;
+            outcomes?: undefined;
+            wallet?: undefined;
+            code?: undefined;
+            agentName?: undefined;
+            count?: undefined;
+            outcome?: undefined;
+            amount_sol?: undefined;
+            user_wallet?: undefined;
+            affiliate_code?: undefined;
+            outcome_index?: undefined;
+            position?: undefined;
+            claims?: undefined;
+            race_market?: undefined;
+            active?: undefined;
+            transaction?: undefined;
+            proposer_wallet?: undefined;
+            resolver_wallet?: undefined;
+            caller_wallet?: undefined;
+            winning_outcome_index?: undefined;
+            disputer_wallet?: undefined;
+            vote_yes?: undefined;
+            vote_outcome_index?: undefined;
+            new_vote_outcome_index?: undefined;
+            user_to_add?: undefined;
+            user_to_remove?: undefined;
+            display_name?: undefined;
+            creator_fee_bps?: undefined;
+            default_fee_bps?: undefined;
+            new_closing_time?: undefined;
+            new_resolution_time?: undefined;
+            reason?: undefined;
+            authority_wallet?: undefined;
+        };
+        required: string[];
+    };
+} | {
+    name: string;
+    description: string;
+    inputSchema: {
+        type: "object";
+        properties: {
+            race_market: {
+                type: string;
+                description: string;
+            };
+            new_vote_outcome_index: {
+                type: string;
+                description: string;
+            };
+            voter_wallet: {
+                type: string;
+                description: string;
+            };
+            status?: undefined;
+            layer?: undefined;
+            publicKey?: undefined;
+            market?: undefined;
+            side?: undefined;
+            amount?: undefined;
+            outcomeIndex?: undefined;
+            question?: undefined;
+            closing_time?: undefined;
+            resolution_time?: undefined;
+            market_type?: undefined;
+            event_time?: undefined;
+            measurement_start?: undefined;
+            measurement_end?: undefined;
+            creator_wallet?: undefined;
+            invite_hash?: undefined;
+            outcomes?: undefined;
+            wallet?: undefined;
+            code?: undefined;
+            agentName?: undefined;
+            count?: undefined;
+            outcome?: undefined;
+            amount_sol?: undefined;
+            user_wallet?: undefined;
+            affiliate_code?: undefined;
+            outcome_index?: undefined;
+            position?: undefined;
+            claims?: undefined;
+            active?: undefined;
+            transaction?: undefined;
+            proposer_wallet?: undefined;
+            resolver_wallet?: undefined;
+            caller_wallet?: undefined;
+            winning_outcome_index?: undefined;
+            disputer_wallet?: undefined;
+            vote_yes?: undefined;
+            vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2320,6 +2590,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
@@ -2386,6 +2658,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
@@ -2448,6 +2722,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2515,6 +2791,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
@@ -2581,6 +2859,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             display_name?: undefined;
             creator_fee_bps?: undefined;
@@ -2648,6 +2928,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             default_fee_bps?: undefined;
@@ -2714,6 +2996,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             creator_fee_bps?: undefined;
@@ -2772,6 +3056,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2843,6 +3129,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2912,6 +3200,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -2978,6 +3268,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;
@@ -3044,6 +3336,8 @@ export declare const TOOLS: ({
             vote_yes?: undefined;
             voter_wallet?: undefined;
             vote_outcome_index?: undefined;
+            new_vote_yes?: undefined;
+            new_vote_outcome_index?: undefined;
             user_to_add?: undefined;
             user_to_remove?: undefined;
             display_name?: undefined;

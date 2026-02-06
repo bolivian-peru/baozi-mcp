@@ -1,9 +1,12 @@
 /**
- * Market Creation Validation Rules (v6.2 Compliant)
+ * Market Creation Validation Rules (v6.3 Compliant)
  *
  * Implements validation for:
  * - Rule A: Event-based markets (12-24h buffer before event)
  * - Rule B: Measurement-period markets (close before measurement starts)
+ * - Rule C: Objective verifiability (v6.3) - blocks subjective outcomes
+ * - Rule D: Manipulation prevention (v6.3) - blocks self-referential markets
+ * - Rule E: Approved data sources (v6.3) - enforces verifiable resolution
  * - Race market outcome validation
  * - Question and timing constraints
  */

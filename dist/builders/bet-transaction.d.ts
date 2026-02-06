@@ -47,9 +47,25 @@ export declare function simulateBetTransaction(transaction: Transaction, userWal
  */
 export declare function extractMarketIdFromData(data: Buffer): bigint;
 /**
- * Extract access_gate from market data to determine if whitelist is needed
- * This requires parsing through the struct to find access_gate field
+ * Extract layer and access_gate from market data to determine if whitelist is needed
+ * Returns { layer, accessGate }
+ *
+ * Layer values: 0 = Official, 1 = Lab, 2 = Private
+ * AccessGate values: 0 = Public, 1 = Whitelist, 2 = InviteHash
+ *
+ * IMPORTANT: Only Private markets (layer=2) can have whitelist.
+ * Lab and Official markets are ALWAYS public.
  */
+export declare function extractMarketAccessInfo(data: Buffer): {
+    layer: number;
+    accessGate: number;
+};
+/**
+ * Determine if whitelist is required for betting
+ * ONLY Private markets (layer=2) with AccessGate::Whitelist need whitelist
+ * Lab (layer=1) and Official (layer=0) markets are ALWAYS public
+ */
+export declare function isWhitelistRequired(data: Buffer): boolean;
 export declare function extractAccessGateFromData(data: Buffer): number;
 /**
  * Fetch market data and build bet transaction

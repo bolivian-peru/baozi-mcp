@@ -2,7 +2,7 @@
  * Market Creation Handler
  *
  * Provides high-level functions for creating markets:
- * - Validation against v6.2 rules
+ * - Validation against v6.3 rules
  * - Fee calculation
  * - Transaction building
  * - PDA derivation helpers
