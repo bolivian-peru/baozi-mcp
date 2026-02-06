@@ -114,21 +114,17 @@ function createPlaceBetSolInstruction(params: {
   data.writeUInt8(params.outcome ? 1 : 0, 8);
   data.writeBigUInt64LE(params.amount, 9);
 
+  // For Anchor optional accounts, we MUST include the account in the same position
+  // but pass PROGRAM_ID as placeholder when not using it
   const keys = [
     { pubkey: params.config, isSigner: false, isWritable: false },
     { pubkey: params.market, isSigner: false, isWritable: true },
     { pubkey: params.position, isSigner: false, isWritable: true },
-  ];
-
-  // Add optional whitelist
-  if (params.whitelist) {
-    keys.push({ pubkey: params.whitelist, isSigner: false, isWritable: false });
-  }
-
-  keys.push(
+    // Whitelist: pass actual PDA if needed, otherwise PROGRAM_ID as "None" placeholder
+    { pubkey: params.whitelist || PROGRAM_ID, isSigner: false, isWritable: false },
     { pubkey: params.user, isSigner: true, isWritable: true },
-    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
-  );
+    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+  ];
 
   return new TransactionInstruction({
     programId: PROGRAM_ID,
@@ -158,23 +154,19 @@ function createPlaceBetSolWithAffiliateInstruction(params: {
   data.writeUInt8(params.outcome ? 1 : 0, 8);
   data.writeBigUInt64LE(params.amount, 9);
 
+  // For Anchor optional accounts, we MUST include the account in the same position
+  // but pass PROGRAM_ID as placeholder when not using it
   const keys = [
     { pubkey: params.config, isSigner: false, isWritable: false },
     { pubkey: params.market, isSigner: false, isWritable: true },
     { pubkey: params.position, isSigner: false, isWritable: true },
     { pubkey: params.affiliate, isSigner: false, isWritable: true },
     { pubkey: params.referredUser, isSigner: false, isWritable: true },
-  ];
-
-  // Add optional whitelist
-  if (params.whitelist) {
-    keys.push({ pubkey: params.whitelist, isSigner: false, isWritable: false });
-  }
-
-  keys.push(
+    // Whitelist: pass actual PDA if needed, otherwise PROGRAM_ID as "None" placeholder
+    { pubkey: params.whitelist || PROGRAM_ID, isSigner: false, isWritable: false },
     { pubkey: params.user, isSigner: true, isWritable: true },
-    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false }
-  );
+    { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+  ];
 
   return new TransactionInstruction({
     programId: PROGRAM_ID,

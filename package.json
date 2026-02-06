@@ -1,6 +1,6 @@
 {
   "name": "@baozi.bet/mcp-server",
-  "version": "4.0.7",
+  "version": "4.0.8",
   "description": "MCP server for Baozi prediction markets on Solana - full protocol coverage with market creation and AI agent network",
   "type": "module",
   "main": "dist/index.js",
