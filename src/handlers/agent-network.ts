@@ -399,7 +399,7 @@ export async function getAgentNetworkStats(): Promise<AgentNetworkStats> {
  * Format affiliate link for sharing between agents
  */
 export function formatAffiliateLink(affiliateCode: string, marketPda?: string): string {
-  const baseUrl = 'https://baozi.ooo';
+  const baseUrl = 'https://baozi.bet';
   if (marketPda) {
     return `${baseUrl}/market/${marketPda}?ref=${affiliateCode}`;
   }

@@ -41,7 +41,7 @@ This MCP server enables AI agents to interact with [Baozi](https://baozi.bet) pr
 - **Quote Calculation** - Expected payouts with odds analysis
 - **Transaction Building** - Unsigned transactions for betting, claims, resolution
 - **Position Management** - View wallet positions and claimable winnings
-- **Validation** - Enforce v6.2 timing rules before market creation
+- **Validation** - Enforce v6.3 timing rules before market creation
 
 **Key Principle**: Agent builds, User signs. No private keys in agent.
 
@@ -89,7 +89,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 | `build_create_race_market_transaction` | Create Race (multi-outcome) market |
 | `get_creation_fees` | Get fee structure by layer |
 | `get_platform_fees` | Get platform fee rates |
-| `get_timing_rules` | Get v6.2 timing constraints |
+| `get_timing_rules` | Get v6.3 timing constraints |
 | `generate_invite_hash` | Generate hash for private markets |
 
 ### Resolution (6 tools)
@@ -155,7 +155,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 |------|-------------|
 | `get_positions` | Get wallet positions |
 | `get_claimable` | Get claimable winnings/refunds |
-| `validate_market_params` | Validate against v6.2 rules |
+| `validate_market_params` | Validate against v6.3 rules |
 | `validate_bet` | Validate bet parameters |
 
 ### Resolution Status (4 tools)
@@ -210,7 +210,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 | Parameter | Value |
 |-----------|-------|
 | **Network** | Solana Mainnet |
-| **Program ID** | `DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY` |
+| **Program ID** | `FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ` |
 | **IDL Version** | baozi_markets_v4_7_6 |
 | **Betting Model** | Pari-mutuel |
 | **Min Bet** | 0.01 SOL |
@@ -219,9 +219,9 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 ### Fee Structure
 | Layer | Platform Fee | Creation Fee |
 |-------|-------------|--------------|
-| Official | 2.5% | 0.1 SOL |
-| Lab | 3% | 0.04 SOL |
-| Private | 2% | 0.04 SOL |
+| Official | 2.5% | 0.01 SOL |
+| Lab | 3% | 0.01 SOL |
+| Private | 2% | 0.01 SOL |
 
 ## Resources
 
@@ -233,7 +233,7 @@ AI Agent ──► MCP Tool ──► Unsigned Transaction (base64)
 | **npm** | https://www.npmjs.com/package/@baozi.bet/mcp-server |
 | **GitHub** | https://github.com/bolivian-peru/baozi-mcp |
 | **Twitter/X** | https://x.com/baozibet |
-| **Solscan** | https://solscan.io/account/DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY |
+| **Solscan** | https://solscan.io/account/FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ |
 
 ## License
 

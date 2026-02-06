@@ -1,5 +1,5 @@
 /**
- * Market Validation Rules (v6.2)
+ * Market Validation Rules (v6.3)
  *
  * Implements timing validation for market creation based on:
  * - Rule A: Event-Based Markets (single point in time)
@@ -39,7 +39,7 @@ export interface MarketValidation {
 // =============================================================================
 
 /**
- * Validate market timing parameters against v6.2 rules
+ * Validate market timing parameters against v6.3 rules
  *
  * Rule A (Event-Based):
  * - Betting closes BEFORE the event occurs

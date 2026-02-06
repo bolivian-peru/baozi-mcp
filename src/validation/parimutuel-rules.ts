@@ -1,9 +1,15 @@
 /**
- * BAOZI PARIMUTUEL MARKET RULES v6.2
+ * BAOZI PARIMUTUEL MARKET RULES v6.3
  *
  * STRICT ENFORCEMENT - All Lab markets MUST comply with these rules.
  * AI agents creating markets through MCP MUST validate against these rules.
  * Markets that don't comply will be BLOCKED from creation.
+ *
+ * v6.3 UPDATES:
+ * - Added SUBJECTIVE_OUTCOME rule to block unverifiable questions
+ * - Added MANIPULATION_RISK rule to prevent self-referential markets
+ * - Enhanced data source validation with strict requirements
+ * - Added blocked keywords and patterns detection
  */
 
 // =============================================================================
@@ -11,7 +17,7 @@
 // =============================================================================
 
 export const PARIMUTUEL_RULES = {
-  version: '6.2',
+  version: '6.3',
 
   /**
    * RULE A: Event-Based Markets
@@ -93,6 +99,95 @@ export const PARIMUTUEL_RULES = {
     name: 'Clear Resolution Criteria',
     requirement: 'Question must have unambiguous YES/NO criteria',
     rationale: 'Prevents disputes and ensures fair resolution',
+  },
+
+  /**
+   * MANDATORY: No Subjective/Unverifiable Outcomes (v6.3)
+   *
+   * Market outcomes MUST be objectively verifiable by a third party.
+   * Questions about AI agents, personal achievements, or untrackable events
+   * are NOT allowed unless tied to an official public record.
+   *
+   * BLOCKED PATTERNS:
+   * ❌ "Will an AI agent do X?" (unverifiable)
+   * ❌ "Will [person] achieve [subjective goal]?" (no official source)
+   * ❌ "Will there be a breakthrough in X?" (subjective)
+   * ❌ "Will X become popular?" (subjective)
+   * ❌ "Will I/we do X?" (self-referential)
+   *
+   * ALLOWED PATTERNS:
+   * ✅ "Will @verified_twitter_account post about X?" (public record)
+   * ✅ "Will company X file for IPO?" (SEC records)
+   * ✅ "Will product X launch before date?" (official announcement)
+   */
+  SUBJECTIVE_OUTCOME: {
+    name: 'Objective Verifiability',
+    requirement: 'Outcome must be objectively verifiable by third party with public record',
+    rationale: 'Prevents unresolvable disputes and manipulation',
+    blockedPatterns: [
+      'ai agent',
+      'an agent',
+      'autonomously',
+      'become popular',
+      'go viral',
+      'be successful',
+      'perform well',
+      'be the best',
+      'breakthrough',
+      'revolutionary',
+      'will i ',
+      'will we ',
+      'will my ',
+      'will our ',
+    ],
+  },
+
+  /**
+   * MANDATORY: No Manipulation Risk (v6.3)
+   *
+   * Market creators CANNOT create markets about outcomes they can directly influence.
+   * This prevents the creator from betting and then making the outcome happen.
+   *
+   * BLOCKED:
+   * ❌ Creator asking about their own project/product/actions
+   * ❌ Markets about unspecified "someone" doing something
+   * ❌ Markets where outcome depends on a small group's decision
+   *
+   * ALLOWED:
+   * ✅ Public company earnings (many stakeholders, SEC oversight)
+   * ✅ Sports outcomes (regulated, large teams)
+   * ✅ Elections (public, regulated)
+   * ✅ Weather (natural, uncontrollable)
+   */
+  MANIPULATION_RISK: {
+    name: 'Manipulation Prevention',
+    requirement: 'Creator must not be able to directly influence outcome',
+    rationale: 'Prevents insider manipulation and unfair markets',
+    blockedPatterns: [
+      'will someone',
+      'will anyone',
+      'will a person',
+      'will a user',
+      'purchase proxies',
+      'buy proxies',
+      'x402 payment',
+      'using credits',
+    ],
+  },
+
+  /**
+   * APPROVED DATA SOURCES (v6.3)
+   *
+   * Markets MUST use one of these approved data sources for resolution.
+   * This ensures verifiable, dispute-free outcomes.
+   */
+  APPROVED_SOURCES: {
+    crypto: ['coingecko', 'coinmarketcap', 'binance', 'coinbase', 'tradingview'],
+    sports: ['espn', 'ufc', 'uefa', 'fifa', 'nba', 'nfl', 'mlb', 'nhl', 'atp', 'wta'],
+    weather: ['nws', 'jma', 'met office', 'weather.gov', 'accuweather'],
+    politics: ['ap news', 'reuters', 'associated press', 'official government'],
+    finance: ['sec', 'nasdaq', 'nyse', 'yahoo finance', 'bloomberg'],
+    social: ['twitter/x official', 'verified account'],
   },
 };
 
@@ -251,6 +346,76 @@ export function validateParimutuelRules(params: {
   }
 
   // =========================================================================
+  // CHECK: Subjective/Unverifiable Outcomes (v6.3)
+  // =========================================================================
+  rulesChecked.push('Objective Verifiability');
+
+  const subjectivePatterns = PARIMUTUEL_RULES.SUBJECTIVE_OUTCOME.blockedPatterns;
+  const foundSubjective = subjectivePatterns.filter(pattern =>
+    questionLower.includes(pattern.toLowerCase())
+  );
+
+  if (isLabMarket && foundSubjective.length > 0) {
+    ruleViolations.push({
+      rule: 'Subjective Outcome',
+      description: `BLOCKED: Question contains unverifiable/subjective terms: "${foundSubjective.join('", "')}". ` +
+        `Markets must have outcomes that can be objectively verified by a third party using public records. ` +
+        `Avoid questions about AI agents, personal achievements, or vague success metrics.`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Unverifiable outcome detected. Terms: ${foundSubjective.join(', ')}`);
+  }
+
+  // =========================================================================
+  // CHECK: Manipulation Risk (v6.3)
+  // =========================================================================
+  rulesChecked.push('Manipulation Prevention');
+
+  const manipulationPatterns = PARIMUTUEL_RULES.MANIPULATION_RISK.blockedPatterns;
+  const foundManipulation = manipulationPatterns.filter(pattern =>
+    questionLower.includes(pattern.toLowerCase())
+  );
+
+  if (isLabMarket && foundManipulation.length > 0) {
+    ruleViolations.push({
+      rule: 'Manipulation Risk',
+      description: `BLOCKED: Question has manipulation risk with terms: "${foundManipulation.join('", "')}". ` +
+        `Market creators cannot create markets about outcomes they could directly influence. ` +
+        `Use markets about public events, regulated competitions, or natural phenomena instead.`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Manipulation risk detected. Terms: ${foundManipulation.join(', ')}`);
+  }
+
+  // =========================================================================
+  // CHECK: Approved Data Source (v6.3 - stricter)
+  // =========================================================================
+  rulesChecked.push('Approved Data Source');
+
+  const allApprovedSources = Object.values(PARIMUTUEL_RULES.APPROVED_SOURCES).flat();
+  const hasApprovedSource = allApprovedSources.some(source =>
+    questionLower.includes(source.toLowerCase())
+  );
+
+  // Check for implied sources (sports teams, crypto assets, weather locations)
+  const hasImpliedSource =
+    /\b(btc|eth|sol|bitcoin|ethereum|solana)\b/i.test(params.question) ||  // Crypto (implies CoinGecko)
+    /\b(ufc|nba|nfl|mlb|nhl|champions league|world cup|super bowl)\b/i.test(params.question) ||  // Sports
+    /\b(tokyo|london|new york|los angeles|paris|snow|rain|temperature)\b/i.test(params.question) ||  // Weather
+    /\b(election|president|congress|parliament|vote)\b/i.test(params.question);  // Politics
+
+  if (isLabMarket && !hasApprovedSource && !hasImpliedSource && !hasDataSource) {
+    ruleViolations.push({
+      rule: 'Data Source',
+      description: `BLOCKED: No verifiable data source specified or implied. ` +
+        `Markets MUST include a data source like "(Source: CoinGecko)", "(Official: ESPN)", etc. ` +
+        `Approved sources: ${allApprovedSources.slice(0, 10).join(', ')}...`,
+      severity: 'CRITICAL',
+    });
+    errors.push('BLOCKED: Must specify verifiable data source for resolution');
+  }
+
+  // =========================================================================
   // RESULT
   // =========================================================================
 
@@ -271,9 +436,9 @@ export function validateParimutuelRules(params: {
 // =============================================================================
 
 export const PARIMUTUEL_RULES_DOCUMENTATION = `
-# BAOZI PARIMUTUEL MARKET RULES v6.2
+# BAOZI PARIMUTUEL MARKET RULES v6.3
 
-## MANDATORY FOR ALL LAB MARKETS
+## ⚠️ STRICT ENFORCEMENT - VIOLATIONS BLOCK MARKET CREATION
 
 ### Rule A: Event-Based Markets
 Markets about specific events (sports, elections, announcements):
@@ -281,44 +446,67 @@ Markets about specific events (sports, elections, announcements):
 - You MUST specify event_time parameter
 - Recommended buffer: 18-24 hours
 
-Example:
-- Question: "Will Team A win vs Team B?"
-- Event time: Game start (e.g., 2026-02-15T20:00:00Z)
-- Closing time: At least 12h before (e.g., 2026-02-15T08:00:00Z)
+✅ ALLOWED: "Will Team A win vs Team B? (Official: ESPN)"
+❌ BLOCKED: Closing time overlaps with event
 
 ### Rule B: Measurement-Period Markets
 Markets about measured values (prices, temperatures, metrics):
 - Betting MUST close BEFORE the measurement period starts
 - You MUST specify measurement_start parameter
-- Recommended: betting closes 1-2 hours before measurement
 
-Example:
-- Question: "Will BTC be above $100k at 00:00 UTC Feb 1?"
-- Measurement start: 2026-02-01T00:00:00Z
-- Closing time: BEFORE measurement (e.g., 2026-01-31T22:00:00Z)
+✅ ALLOWED: "Will BTC be above $100k at 00:00 UTC Feb 1? (Source: CoinGecko)"
+❌ BLOCKED: Betting closes after measurement starts
 
-### Data Source Requirement
-- Include verifiable data source in question
-- Examples: "(Source: CoinGecko)", "(Official: UEFA)", "(NWS Los Angeles)"
+### Rule C: Objective Verifiability (v6.3 - NEW)
+Outcomes MUST be objectively verifiable by third party using public records.
 
-### Clear Criteria
-- Question must have unambiguous YES/NO resolution
-- Include specific thresholds: "$100,000", "3+ goals", etc.
+❌ BLOCKED TERMS (will reject market):
+- "ai agent", "an agent", "autonomously"
+- "will I", "will we", "will my", "will our" (self-referential)
+- "become popular", "go viral", "be successful"
+- "perform well", "be the best", "breakthrough"
 
-## VIOLATIONS WILL BLOCK MARKET CREATION
+✅ ALLOWED: Questions about public events, regulated competitions, official records
 
-If you try to create a market that violates these rules, the MCP will:
-1. Return blocked: true
-2. List specific rule violations
-3. Refuse to build the transaction
+### Rule D: Manipulation Prevention (v6.3 - NEW)
+Creators CANNOT make markets about outcomes they can influence.
 
-## CLASSIFICATION REQUIRED
+❌ BLOCKED TERMS:
+- "will someone", "will anyone", "will a person"
+- "purchase proxies", "buy proxies", "x402 payment"
 
-Every Lab market MUST be classified as either:
-1. Event-based (provide event_time) - Rule A applies
-2. Measurement-based (provide measurement_start) - Rule B applies
+✅ ALLOWED: Sports (regulated), weather (uncontrollable), elections (public)
 
-Unclassified markets will be BLOCKED.
+### Rule E: Approved Data Sources (v6.3 - REQUIRED)
+Markets MUST use an approved data source:
+
+CRYPTO: CoinGecko, CoinMarketCap, Binance, Coinbase, TradingView
+SPORTS: ESPN, UFC, UEFA, FIFA, NBA, NFL, MLB, NHL, ATP, WTA
+WEATHER: NWS, JMA, Met Office, Weather.gov, AccuWeather
+POLITICS: AP News, Reuters, Official Government
+FINANCE: SEC, NASDAQ, NYSE, Yahoo Finance, Bloomberg
+
+❌ BLOCKED: No source = No market
+
+## EXAMPLE VALID MARKET
+
+Question: "Will BTC be above $120,000 at 00:00 UTC Feb 15, 2026? (Source: CoinGecko)"
+Type: measurement
+Measurement Start: 2026-02-15T00:00:00Z
+Closing Time: 2026-02-14T22:00:00Z (2h before)
+✅ APPROVED - Clear criteria, approved source, proper timing
+
+## EXAMPLE BLOCKED MARKETS
+
+❌ "Will an AI agent autonomously purchase proxies?"
+   → BLOCKED: Contains "ai agent", "autonomously", "purchase proxies"
+   → Not verifiable, manipulation risk
+
+❌ "Will crypto go up?"
+   → BLOCKED: No specific threshold, no data source
+
+❌ "Will I become successful?"
+   → BLOCKED: Self-referential, subjective
 `;
 
 /**

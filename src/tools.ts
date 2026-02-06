@@ -37,6 +37,11 @@ import {
 import { validateMarketTiming, MarketTimingParams } from './validation/market-rules.js';
 import { validateBet, calculateBetQuote } from './validation/bet-rules.js';
 import { validateMarketCreation } from './validation/creation-rules.js';
+import {
+  validateParimutuelRules,
+  PARIMUTUEL_RULES,
+  PARIMUTUEL_RULES_DOCUMENTATION,
+} from './validation/parimutuel-rules.js';
 
 // Transaction Builders
 import { buildBetTransaction, fetchAndBuildBetTransaction, simulateBetTransaction } from './builders/bet-transaction.js';
@@ -223,7 +228,7 @@ export const TOOLS = [
   },
   {
     name: 'build_create_lab_market_transaction',
-    description: 'Build unsigned transaction to create a Lab (community) market. Validates against v6.2 rules.',
+    description: 'Build unsigned transaction to create a Lab (community) market. Validates against v6.3 rules.',
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -293,11 +298,32 @@ export const TOOLS = [
   },
   {
     name: 'get_timing_rules',
-    description: 'Get v6.2 timing rules and constraints for market creation.',
+    description: 'Get v6.3 timing rules and constraints for market creation.',
     inputSchema: {
       type: 'object' as const,
       properties: {},
       required: [],
+    },
+  },
+  {
+    name: 'get_parimutuel_rules',
+    description: 'Get v6.3 parimutuel rules for Lab market creation. CRITICAL: Read this BEFORE creating any market. Contains blocked terms, required data sources, and validation rules that will REJECT invalid markets.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {},
+      required: [],
+    },
+  },
+  {
+    name: 'validate_market_question',
+    description: 'Validate a market question against v6.3 rules BEFORE attempting to create it. Returns whether the question would be blocked and why.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        question: { type: 'string', description: 'Market question to validate' },
+        layer: { type: 'string', enum: ['lab', 'private'], description: 'Market layer (default: lab)' },
+      },
+      required: ['question'],
     },
   },
   {
@@ -464,7 +490,7 @@ export const TOOLS = [
   // =========================================================================
   {
     name: 'validate_market_params',
-    description: 'Validate market parameters against v6.2 timing rules.',
+    description: 'Validate market parameters against v6.3 timing rules.',
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -797,6 +823,32 @@ export const TOOLS = [
         voter_wallet: { type: 'string', description: 'Council member wallet' },
       },
       required: ['race_market', 'vote_outcome_index', 'voter_wallet'],
+    },
+  },
+  {
+    name: 'build_change_council_vote_transaction',
+    description: 'Build transaction for council member to change their vote on a boolean market dispute.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key' },
+        new_vote_yes: { type: 'boolean', description: 'New vote (true=YES, false=NO)' },
+        voter_wallet: { type: 'string', description: 'Council member wallet' },
+      },
+      required: ['market', 'new_vote_yes', 'voter_wallet'],
+    },
+  },
+  {
+    name: 'build_change_council_vote_race_transaction',
+    description: 'Build transaction for council member to change their vote on a race market dispute.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        race_market: { type: 'string', description: 'Race market public key' },
+        new_vote_outcome_index: { type: 'number', description: 'New outcome index to vote for' },
+        voter_wallet: { type: 'string', description: 'Council member wallet' },
+      },
+      required: ['race_market', 'new_vote_outcome_index', 'voter_wallet'],
     },
   },
 
@@ -1619,6 +1671,49 @@ export async function handleTool(
         });
       }
 
+      case 'get_parimutuel_rules': {
+        return successResponse({
+          version: PARIMUTUEL_RULES.version,
+          documentation: PARIMUTUEL_RULES_DOCUMENTATION,
+          blockedTerms: {
+            subjective: PARIMUTUEL_RULES.SUBJECTIVE_OUTCOME.blockedPatterns,
+            manipulation: PARIMUTUEL_RULES.MANIPULATION_RISK.blockedPatterns,
+          },
+          approvedSources: PARIMUTUEL_RULES.APPROVED_SOURCES,
+          criticalNote: 'Markets containing ANY blocked terms will be REJECTED. Always include an approved data source.',
+        });
+      }
+
+      case 'validate_market_question': {
+        const question = args.question as string;
+        const layer = (args.layer as 'lab' | 'private') || 'lab';
+
+        if (!question) {
+          return errorResponse('question is required');
+        }
+
+        // Use a dummy closing time for validation (only question content matters for v6.3 rules)
+        const dummyClosingTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+        const validation = validateParimutuelRules({
+          question,
+          closingTime: dummyClosingTime,
+          layer,
+        });
+
+        return successResponse({
+          question,
+          wouldBeBlocked: validation.blocked,
+          valid: !validation.blocked,
+          errors: validation.errors,
+          warnings: validation.warnings,
+          ruleViolations: validation.ruleViolations,
+          suggestion: validation.blocked
+            ? 'Question contains blocked terms. Rephrase using objective, verifiable criteria with an approved data source.'
+            : 'Question passes v6.3 validation. Remember to also specify proper timing parameters.',
+        });
+      }
+
       case 'generate_invite_hash': {
         const hash = generateInviteHash();
         return successResponse({
@@ -1803,6 +1898,42 @@ export async function handleTool(
         return successResponse({
           transaction: { serialized: result.serializedTx },
           instructions: `Sign to vote for outcome #${voteOutcomeIndex}`,
+        });
+      }
+
+      case 'build_change_council_vote_transaction': {
+        const market = args.market as string;
+        const newVoteYes = args.new_vote_yes as boolean;
+        const voterWallet = args.voter_wallet as string;
+        if (!market || newVoteYes === undefined || !voterWallet) {
+          return errorResponse('market, new_vote_yes, and voter_wallet are required');
+        }
+        const result = await buildChangeCouncilVoteTransaction({
+          marketPda: market,
+          newVoteYes,
+          voterWallet,
+        });
+        return successResponse({
+          transaction: { serialized: result.serializedTx },
+          instructions: `Sign to change your vote to ${newVoteYes ? 'YES' : 'NO'}`,
+        });
+      }
+
+      case 'build_change_council_vote_race_transaction': {
+        const raceMarket = args.race_market as string;
+        const newVoteOutcomeIndex = args.new_vote_outcome_index as number;
+        const voterWallet = args.voter_wallet as string;
+        if (!raceMarket || newVoteOutcomeIndex === undefined || !voterWallet) {
+          return errorResponse('race_market, new_vote_outcome_index, and voter_wallet are required');
+        }
+        const result = await buildChangeCouncilVoteRaceTransaction({
+          raceMarketPda: raceMarket,
+          newVoteOutcomeIndex,
+          voterWallet,
+        });
+        return successResponse({
+          transaction: { serialized: result.serializedTx },
+          instructions: `Sign to change your vote to outcome #${newVoteOutcomeIndex}`,
         });
       }
 

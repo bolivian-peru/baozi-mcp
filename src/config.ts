@@ -13,7 +13,7 @@ export const IS_MAINNET = NETWORK === 'mainnet-beta';
 
 // Program ID (V4.7.6 - Mainnet)
 export const PROGRAM_ID = new PublicKey(
-  process.env.BAOZI_PROGRAM_ID || 'DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY'
+  process.env.BAOZI_PROGRAM_ID || 'FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ'
 );
 
 // RPC Endpoints
@@ -104,9 +104,9 @@ export const FEES = {
   PRIVATE_PLATFORM_FEE_BPS: 200,  // 2%
 
   // Creation fees (in lamports)
-  OFFICIAL_CREATION_FEE: 100_000_000, // 0.1 SOL
-  LAB_CREATION_FEE: 40_000_000,       // 0.04 SOL
-  PRIVATE_CREATION_FEE: 40_000_000,   // 0.04 SOL
+  OFFICIAL_CREATION_FEE: 10_000_000,  // 0.01 SOL
+  LAB_CREATION_FEE: 10_000_000,       // 0.01 SOL
+  PRIVATE_CREATION_FEE: 10_000_000,   // 0.01 SOL
 
   // Fee split (within platform fee)
   AFFILIATE_FEE_BPS: 100,  // 1%

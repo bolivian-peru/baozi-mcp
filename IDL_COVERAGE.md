@@ -3,7 +3,7 @@
 **Generated**: January 30, 2026
 **IDL Version**: baozi_markets_v4_7_6
 **MCP Version**: 4.0.0
-**Total Tools**: 66
+**Total Tools**: 62
 
 ---
 
@@ -11,40 +11,15 @@
 
 | Category | IDL Instructions | MCP Tools | Coverage |
 |----------|------------------|-----------|----------|
-| **User Operations** | 48 | 66 | 100%+ |
+| **User Operations** | 48 | 62 | 100%+ |
 | **Admin Operations** | 24 | 0 | N/A (not for agents) |
-| **Total** | 72 | 66 | - |
+| **Total** | 72 | 62 | - |
 
 > Note: MCP has more tools than IDL instructions because it includes read operations, validation, simulation, and helper tools.
 
 ---
 
-## Private Market Support
-
-The MCP fully supports private (invite-only) markets:
-
-| Tool | Purpose |
-|------|---------|
-| `build_create_private_market_transaction` | Create invite-only market |
-| `generate_invite_hash` | Generate access hash |
-| `build_add_to_whitelist_transaction` | Add user to whitelist |
-| `build_remove_from_whitelist_transaction` | Remove user from whitelist |
-| `build_create_race_whitelist_transaction` | Create race market whitelist |
-| `build_add_to_race_whitelist_transaction` | Whitelist for race markets |
-| `build_remove_from_race_whitelist_transaction` | Remove from race whitelist |
-
-### Private Market Flow
-```
-1. Creator calls generate_invite_hash → Gets 64-char hex
-2. Creator calls build_create_private_market_transaction → Market created
-3. Creator shares invite link: baozi.ooo/private/market/{pda}?invite={hash}
-4. OR: Creator calls build_add_to_whitelist_transaction for each user
-5. Whitelisted users can bet on the market
-```
-
----
-
-## All 66 Tools by Category
+## All 62 Tools by Category
 
 ### Market Reading (6 tools)
 | Tool | Purpose |
@@ -125,15 +100,13 @@ The MCP fully supports private (invite-only) markets:
 | `build_update_creator_profile_transaction` | `update_creator_profile` |
 | `build_claim_creator_transaction` | `claim_creator_sol` |
 
-### Market Management (6 tools)
+### Market Management (4 tools)
 | Tool | IDL Instruction |
 |------|-----------------|
 | `build_close_market_transaction` | `close_market` |
 | `build_extend_market_transaction` | `extend_market` |
 | `build_close_race_market_transaction` | `close_race_market` |
 | `build_extend_race_market_transaction` | `extend_race_market` |
-| `build_cancel_market_transaction` | `cancel_market` |
-| `build_cancel_race_transaction` | `cancel_race` |
 
 ### Affiliates (10 tools)
 | Tool | IDL Instruction |
@@ -154,7 +127,7 @@ The MCP fully supports private (invite-only) markets:
 |------|---------|
 | `get_positions` | User positions |
 | `get_claimable` | Claimable positions |
-| `validate_market_params` | v6.2 timing rules |
+| `validate_market_params` | v6.3 timing rules |
 | `validate_bet` | Bet validation |
 
 ### Simulation (1 tool)
@@ -173,7 +146,7 @@ These 24 instructions require admin/guardian keys and are NOT exposed via MCP:
 | **Initialization** | `initialize`, `init_sol_treasury`, `init_revenue_config`, `init_clawdbot_oracle_config` |
 | **Settings** | `update_admin`, `update_guardian`, `update_treasury`, `update_fees`, `update_lab_settings`, `update_private_settings`, `update_affiliate_settings` |
 | **Protocol Control** | `pause_protocol`, `pause_market`, `set_betting_freeze`, `set_cancel_threshold`, `set_dispute_config`, `set_staking_vault`, `set_affiliate_bonus_budgets`, `set_clawdbot_oracle` |
-| **Market Admin** | `create_market_sol` (Official only) |
+| **Market Admin** | `create_market_sol` (Official), `cancel_market`, `cancel_race`, `shorten_market_time`, `shorten_race_market_time` |
 | **Dispute Admin** | `admin_resolve_dispute`, `admin_resolve_race_dispute` |
 | **Other** | `verify_creator`, `grant_affiliate_bonus_sol`, `sweep_dust_sol`, `sweep_race_dust_sol` |
 
@@ -198,31 +171,6 @@ AI Agent ──► MCP Tool ──► Returns unsigned tx (base64)
 
 ## Usage Examples
 
-### Create Private Market
-```json
-{
-  "name": "build_create_private_market_transaction",
-  "arguments": {
-    "question": "Will our team hit Q1 targets?",
-    "closing_time": "2026-03-31T00:00:00Z",
-    "creator_wallet": "...",
-    "invite_hash": "abc123..."
-  }
-}
-```
-
-### Add User to Whitelist
-```json
-{
-  "name": "build_add_to_whitelist_transaction",
-  "arguments": {
-    "market": "...",
-    "user_to_add": "FriendWalletAddress...",
-    "creator_wallet": "..."
-  }
-}
-```
-
 ### List Lab Markets
 ```json
 {"name": "list_markets", "arguments": {"layer": "Lab", "status": "Active"}}
@@ -235,14 +183,29 @@ AI Agent ──► MCP Tool ──► Returns unsigned tx (base64)
 
 ### Build Bet Transaction
 ```json
-{
-  "name": "build_bet_transaction",
-  "arguments": {
-    "market": "...",
-    "outcome": "yes",
-    "amount_sol": 1.0,
-    "user_wallet": "...",
-    "affiliate_code": "CLAUDE"
-  }
-}
+{"name": "build_bet_transaction", "arguments": {
+  "market": "...",
+  "outcome": "yes",
+  "amount_sol": 1.0,
+  "user_wallet": "...",
+  "affiliate_code": "CLAUDE"
+}}
+```
+
+### Resolve Market
+```json
+{"name": "build_resolve_market_transaction", "arguments": {
+  "market": "...",
+  "outcome": true,
+  "resolver_wallet": "..."
+}}
+```
+
+### Add to Private Market Whitelist
+```json
+{"name": "build_add_to_whitelist_transaction", "arguments": {
+  "market": "...",
+  "user_to_add": "...",
+  "creator_wallet": "..."
+}}
 ```

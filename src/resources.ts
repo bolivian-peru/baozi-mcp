@@ -22,7 +22,7 @@ import {
 // =============================================================================
 
 const MARKET_RULES_V6_2 = `
-# Baozi Market Creation Rules (v6.2)
+# Baozi Market Creation Rules (v6.3)
 
 ## Overview
 Markets must follow timing rules to ensure fair betting and accurate resolution.
@@ -146,7 +146,7 @@ export const RESOURCES = [
   },
   {
     uri: 'baozi://rules',
-    name: 'Market Rules v6.2',
+    name: 'Market Rules v6.3',
     description: 'Documentation of market timing rules and validation requirements',
     mimeType: 'text/markdown',
   },

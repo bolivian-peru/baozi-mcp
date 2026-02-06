@@ -2,7 +2,7 @@
  * Market Creation Handler
  *
  * Provides high-level functions for creating markets:
- * - Validation against v6.2 rules
+ * - Validation against v6.3 rules
  * - Fee calculation
  * - Transaction building
  * - PDA derivation helpers
@@ -483,5 +483,5 @@ export function generateInviteHash(): string {
  * Derive invite link from hash
  */
 export function getInviteLink(marketPda: string, inviteHash: string): string {
-  return `https://baozi.ooo/market/${marketPda}?invite=${inviteHash}`;
+  return `https://baozi.bet/market/${marketPda}?invite=${inviteHash}`;
 }

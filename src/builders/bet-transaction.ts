@@ -323,10 +323,16 @@ export function extractMarketIdFromData(data: Buffer): bigint {
 }
 
 /**
- * Extract access_gate from market data to determine if whitelist is needed
- * This requires parsing through the struct to find access_gate field
+ * Extract layer and access_gate from market data to determine if whitelist is needed
+ * Returns { layer, accessGate }
+ *
+ * Layer values: 0 = Official, 1 = Lab, 2 = Private
+ * AccessGate values: 0 = Public, 1 = Whitelist, 2 = InviteHash
+ *
+ * IMPORTANT: Only Private markets (layer=2) can have whitelist.
+ * Lab and Official markets are ALWAYS public.
  */
-export function extractAccessGateFromData(data: Buffer): number {
+export function extractMarketAccessInfo(data: Buffer): { layer: number; accessGate: number } {
   // V4.7.6 Market struct layout after market_id:
   // market_id (8) + question (4+len) + closing_time (8) + resolution_time (8) +
   // auto_stop_buffer (8) + yes_pool (8) + no_pool (8) + snapshot_yes_pool (8) +
@@ -381,15 +387,40 @@ export function extractAccessGateFromData(data: Buffer): number {
   // bump (1)
   offset += 1;
 
-  // layer (enum, 1 byte)
+  // layer (enum, 1 byte) - 0=Official, 1=Lab, 2=Private
+  const layer = data.readUInt8(offset);
   offset += 1;
 
   // resolution_mode (enum, 1 byte)
   offset += 1;
 
-  // access_gate (enum, 1 byte)
+  // access_gate (enum, 1 byte) - 0=Public, 1=Whitelist, 2=InviteHash
   const accessGate = data.readUInt8(offset);
 
+  return { layer, accessGate };
+}
+
+/**
+ * Determine if whitelist is required for betting
+ * ONLY Private markets (layer=2) with AccessGate::Whitelist need whitelist
+ * Lab (layer=1) and Official (layer=0) markets are ALWAYS public
+ */
+export function isWhitelistRequired(data: Buffer): boolean {
+  const { layer, accessGate } = extractMarketAccessInfo(data);
+
+  // Only Private markets (layer=2) can have whitelist
+  // Lab (1) and Official (0) are ALWAYS public regardless of access_gate
+  if (layer !== 2) {
+    return false;
+  }
+
+  // For Private markets, check if access_gate is Whitelist (1)
+  return accessGate === 1;
+}
+
+// Keep old function for backwards compatibility but use new logic
+export function extractAccessGateFromData(data: Buffer): number {
+  const { accessGate } = extractMarketAccessInfo(data);
   return accessGate;
 }
 
@@ -435,9 +466,9 @@ export async function fetchAndBuildBetTransaction(params: {
     // Extract market_id (first field after discriminator)
     const marketId = extractMarketIdFromData(data);
 
-    // Check if whitelist is required
-    const accessGate = extractAccessGateFromData(data);
-    const whitelistRequired = accessGate === 1; // 1 = Whitelist
+    // Check if whitelist is required (only for Private markets with Whitelist access_gate)
+    // Lab and Official markets are ALWAYS public - never need whitelist
+    const whitelistRequired = isWhitelistRequired(data);
 
     // Build affiliate PDAs if provided
     let affiliatePda: PublicKey | undefined;

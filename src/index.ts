@@ -7,7 +7,7 @@
  *
  * Features:
  * - Read markets, positions, quotes
- * - Validate market timing (v6.2 rules)
+ * - Validate market timing (v6.3 rules)
  * - Build unsigned bet transactions
  * - Simulate transactions before signing
  *
