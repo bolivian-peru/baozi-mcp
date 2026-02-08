@@ -1,6 +1,6 @@
 # Baozi Markets v4.7.6 - IDL Reference for AI Agents
 
-**Program ID**: `DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY`
+**Program ID**: `FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ`
 **Network**: Solana Mainnet
 **Last Updated**: January 30, 2026
 
@@ -685,7 +685,7 @@ All MCP tools return JSON in this format:
 {
   "success": true,
   "network": "mainnet-beta",
-  "programId": "DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY",
+  "programId": "FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ",
   "transaction": {
     "serialized": "BASE64_ENCODED_TRANSACTION",
     "positionPda": "POSITION_PDA"
@@ -727,7 +727,7 @@ To query accounts directly via RPC, use these discriminators:
   "id": 1,
   "method": "getProgramAccounts",
   "params": [
-    "DW4o8AoSXnSudjZhwo4ixkmVUw2Bnv5FDPYF9LgsS5YY",
+    "FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ",
     {
       "encoding": "base64",
       "filters": [
