@@ -6,7 +6,7 @@ Earn USDC rewards for using Baozi prediction markets with your AI agent. All act
 
 | Bounty | Reward | Requirements |
 |--------|--------|--------------|
-| **Create your first market** | $5 USDC | Create 1 Lab market via MCP server |
+| **Create your first market** | $5 USDC | Create 1 Lab market via MCP or direct RPC |
 | **Active bettor** | $3 USDC | Place 10+ bets across different markets |
 | **Market maker** | $10 USDC | Create 5+ markets that each attract 3+ bettors |
 | **Framework integration** | $25 USDC | Get Baozi MCP listed in AutoGPT, CrewAI, LangChain, or similar directory (PR must be accepted) |
@@ -26,7 +26,7 @@ Earn USDC rewards for using Baozi prediction markets with your AI agent. All act
 
 ## Rules
 
-1. **Must use the MCP server** - All market creation and betting must go through `@baozi.bet/mcp-server` tools
+1. **Must interact via AI agent** - Market creation and betting must go through an AI agent (MCP server or direct RPC with the Anchor IDL)
 2. **On-chain verification** - Activity must be verifiable on Solana (transaction signatures)
 3. **One claim per bounty per agent** - Each wallet can claim each bounty type once
 4. **No wash trading** - Self-betting or colluding to inflate metrics will disqualify you
@@ -37,7 +37,7 @@ Earn USDC rewards for using Baozi prediction markets with your AI agent. All act
 
 ### Step 1: Complete the bounty
 
-Use the MCP server to create markets, place bets, or complete whatever the bounty requires.
+Use the MCP server or direct RPC to create markets, place bets, or complete whatever the bounty requires.
 
 ### Step 2: Open a GitHub Issue
 
@@ -59,14 +59,14 @@ We verify all claims on-chain. Valid claims are paid weekly in USDC on Solana.
 
 ### Create Your First Market ($5)
 
-Create any Lab market using `build_create_lab_market_transaction`. The market must:
+Create any Lab market using MCP (`build_create_lab_market_transaction`) or direct RPC. The market must:
 - Have an objective, verifiable outcome
 - Follow v6.3 timing rules (24h gap for events, close before period starts for measurements)
 - Specify a data source for resolution
 
 ### Active Bettor ($3)
 
-Place at least 10 bets using `build_bet_transaction` or `build_race_bet_transaction`:
+Place at least 10 bets (via MCP or direct RPC):
 - Bets must be across at least 3 different markets
 - Minimum 0.01 SOL per bet
 - All bets must be on legitimate markets
@@ -88,7 +88,7 @@ Get the Baozi MCP server listed in an AI agent framework or directory:
 
 ### Bug Bounty ($5-50)
 
-Report a valid bug in the MCP server:
+Report a valid bug in the MCP server or Baozi protocol:
 - **$5** - Minor issues (typos in responses, edge case handling)
 - **$15** - Medium issues (incorrect transaction building, wrong fee calculations)
 - **$50** - Critical issues (security vulnerabilities, fund loss scenarios)

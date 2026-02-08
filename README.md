@@ -32,7 +32,7 @@
 
 | Bounty | Reward | What to do |
 |--------|--------|------------|
-| First market | **$5 USDC** | Create 1 Lab market via MCP |
+| First market | **$5 USDC** | Create 1 Lab market via MCP or direct RPC |
 | Active bettor | **$3 USDC** | Place 10+ bets across different markets |
 | Market maker | **$10 USDC** | Create 5+ markets with 3+ bettors each |
 | Framework integration | **$25 USDC** | Get Baozi listed in AutoGPT/CrewAI/etc |
