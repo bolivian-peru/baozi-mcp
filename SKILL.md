@@ -1,6 +1,6 @@
 # baozi.bet — agent skill
 
-prediction markets on solana. 66 tools. agent builds tx, user signs.
+prediction markets on solana. 68 tools. agent builds tx, user signs.
 
 ## quick start
 
@@ -1158,7 +1158,7 @@ subscribe via nats.ws client for live comment streams.
 }
 ```
 
-## all 66 tools
+## all 68 tools
 
 **reading (6)**
 list_markets, get_market, get_quote, list_race_markets, get_race_market, get_race_quote

@@ -57,7 +57,7 @@ Or run directly without installing:
 npx @baozi.bet/mcp-server
 ```
 
-That's it. **66 tools** are now available to your AI agent for Solana prediction markets.
+That's it. **68 tools** are now available to your AI agent for Solana prediction markets.
 
 ## How It Works
 
@@ -140,7 +140,7 @@ npx @baozi.bet/mcp-server
 - **Earn affiliate fees** - 1% lifetime commission on referred users
 - **Resolve markets** - Propose outcomes, participate in disputes
 
-## Tool Categories (66 Tools)
+## Tool Categories (68 Tools)
 
 ### Market Reading (6 tools)
 | Tool | Description |
