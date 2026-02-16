@@ -76,8 +76,8 @@ export const DISCRIMINATORS = {
   USER_POSITION: Buffer.from([251, 248, 209, 245, 83, 234, 17, 27]),
   USER_POSITION_BASE58: 'j9SjDYAWesU',
 
-  // Race Market
-  RACE_MARKET: Buffer.from([149, 8, 156, 202, 160, 252, 176, 217]),
+  // Race Market - SHA256("account:RaceMarket")
+  RACE_MARKET: Buffer.from([235, 196, 111, 75, 230, 113, 118, 238]),
 
   // Race Position
   RACE_POSITION: Buffer.from([44, 182, 16, 1, 230, 14, 174, 46]),
@@ -86,17 +86,17 @@ export const DISCRIMINATORS = {
   // Global Config
   GLOBAL_CONFIG: Buffer.from([149, 8, 156, 202, 160, 252, 176, 217]),
 
-  // Creator Profile
-  CREATOR_PROFILE: Buffer.from([83, 210, 28, 6, 46, 183, 224, 219]),
+  // Creator Profile - SHA256("account:CreatorProfile")
+  CREATOR_PROFILE: Buffer.from([251, 250, 184, 111, 214, 178, 32, 221]),
 
-  // Affiliate
-  AFFILIATE: Buffer.from([24, 240, 16, 245, 33, 46, 77, 168]),
+  // Affiliate - SHA256("account:Affiliate")
+  AFFILIATE: Buffer.from([136, 95, 107, 149, 36, 195, 146, 35]),
 
-  // Referred User (for affiliate tracking)
-  REFERRED_USER: Buffer.from([188, 210, 247, 185, 105, 204, 220, 46]),
+  // Referred User (for affiliate tracking) - SHA256("account:ReferredUser")
+  REFERRED_USER: Buffer.from([74, 220, 238, 29, 172, 145, 111, 223]),
 
-  // Dispute Meta
-  DISPUTE_META: Buffer.from([62, 14, 221, 64, 175, 241, 48, 165]),
+  // Dispute Meta - SHA256("account:DisputeMeta")
+  DISPUTE_META: Buffer.from([172, 110, 190, 78, 173, 57, 254, 229]),
 } as const;
 
 // =============================================================================

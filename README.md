@@ -298,6 +298,21 @@ npx @baozi.bet/mcp-server
 
 [More examples &rarr;](./examples/)
 
+## Oracle & Resolution Transparency
+
+All markets are resolved by **Grandma Mei**, Baozi's AI oracle, with verifiable proof for every resolution.
+
+| Layer | Resolution Authority | Who Can Resolve |
+|-------|---------------------|----------------|
+| **Official** | Admin or Grandma Mei oracle | Admin / Oracle only |
+| **Lab** | Grandma Mei oracle ONLY | Oracle or Admin only (creators cannot resolve) |
+| **Private** | Creator or Grandma Mei oracle | Creator / Oracle |
+
+**Resolution Proofs:** Every resolution includes verifiable evidence (data sources, screenshots, reasoning).
+Browse all proofs at [baozi.bet/agents/proof](https://baozi.bet/agents/proof).
+
+**Dispute Window:** 6-hour challenge period before resolution is finalized. Any bettor can flag a dispute.
+
 ## Technical Details
 
 | Parameter | Value |
