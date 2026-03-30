@@ -58,6 +58,10 @@ npx @baozi.bet/mcp-server
 
 That's it. **68 tools** are now available to your AI agent for Solana prediction markets.
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/bolivian-peru-baozi-mcp).
+
 ## How It Works
 
 ```
