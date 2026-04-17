@@ -42,7 +42,8 @@ upgrade authority:     2hgph1xwES4mUtAX6kan8qcU27oSWeSXeew99CgVWcER
 - website:  https://baozi.bet
 - npm:      https://www.npmjs.com/package/@baozi.bet/mcp-server
 - github:   https://github.com/bolivian-peru/baozi-mcp
-- idl:      https://baozi.bet/skill/idl
+- idl:      https://baozi.bet/agents/idl
+- docs:     https://baozi.bet/agents/docs
 - telegram: https://t.me/baozibet
 - twitter:  https://x.com/baozibet
 
