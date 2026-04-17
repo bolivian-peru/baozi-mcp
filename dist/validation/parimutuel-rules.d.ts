@@ -1,114 +1,83 @@
 /**
- * BAOZI PARIMUTUEL MARKET RULES v6.3
+ * BAOZI PARIMUTUEL MARKET RULES v7.2
  *
  * STRICT ENFORCEMENT - All Lab markets MUST comply with these rules.
  * AI agents creating markets through MCP MUST validate against these rules.
  * Markets that don't comply will be BLOCKED from creation.
  *
- * v6.3 UPDATES:
- * - Added SUBJECTIVE_OUTCOME rule to block unverifiable questions
- * - Added MANIPULATION_RISK rule to prevent self-referential markets
- * - Enhanced data source validation with strict requirements
- * - Added blocked keywords and patterns detection
+ * v7.2 TWO ALLOWED TYPES:
+ * Type A: Scheduled Event — outcome revealed at one moment. Betting closes 24h before.
+ * Type B: Measurement Period — data collected over defined period. Betting closes BEFORE period starts.
+ *
+ * BANNED:
+ * - Price predictions (observable continuously)
+ * - Open-window deadline markets (event observable instantly when it happens)
+ * - Subjective/unverifiable outcomes
+ * - Manipulable outcomes
  */
 export declare const PARIMUTUEL_RULES: {
     version: string;
     /**
-     * RULE A: Event-Based Markets
-     *
-     * For markets about specific events (sports, elections, announcements):
-     * - Betting must close AT LEAST 12 hours BEFORE the event
-     * - Recommended buffer: 18-24 hours
-     * - Event time must be explicitly specified
-     *
-     * RATIONALE: Prevents late-breaking information from giving unfair advantage
-     *
-     * Examples:
-     * ✅ "Will Team A win vs Team B?" + event_time = game_start
-     * ✅ "Will Company X announce earnings above $1B?" + event_time = announcement
-     * ❌ "Will it rain tomorrow?" (no clear event time)
+     * TYPE A: Scheduled Event Markets
+     * Outcome revealed at one specific moment (fight end, ceremony, announcement).
+     * Betting closes 24h+ before the event.
      */
-    RULE_A: {
+    TYPE_A: {
         name: string;
         minBufferHours: number;
-        recommendedBufferHours: number;
         requirement: string;
         rationale: string;
     };
     /**
-     * RULE B: Measurement-Period Markets
-     *
-     * For markets about measured values (prices, temperatures, metrics):
-     * - Betting must close BEFORE the measurement period starts
-     * - measurement_start must be explicitly specified
-     * - Recommended: betting closes 1-2 hours before measurement
-     *
-     * RATIONALE: Prevents anyone from betting with foreknowledge of measurements
-     *
-     * Examples:
-     * ✅ "Will BTC be above $100k at 00:00 UTC Feb 1?" + measurement_start = Feb 1 00:00
-     * ✅ "Will Tokyo have snowfall on Feb 4?" + measurement_start = Feb 4 00:00
-     * ❌ "Will BTC close above $100k on Feb 2?" + betting_closes = Feb 2 23:59 (VIOLATION!)
+     * TYPE B: Measurement-Period Markets
+     * Data collected over a defined period (chart tracking week, opening weekend, etc.).
+     * Betting closes BEFORE the measurement period starts.
      */
-    RULE_B: {
-        name: string;
-        requirement: string;
-        rationale: string;
-        recommendedBufferHours: number;
-    };
-    /**
-     * MANDATORY: Verifiable Data Source
-     *
-     * Every market question MUST specify or clearly imply a verifiable data source.
-     * This ensures objective resolution and prevents disputes.
-     *
-     * Examples:
-     * ✅ "Will BTC be above $100k? (Source: CoinGecko)"
-     * ✅ "Will it snow in Tokyo? (JMA official record)"
-     * ✅ "Will Real Madrid win?" (Implied: official UEFA result)
-     * ❌ "Will the economy improve?" (No verifiable source)
-     * ❌ "Will Claude be the best AI?" (Subjective, no source)
-     */
-    DATA_SOURCE: {
+    TYPE_B: {
         name: string;
         requirement: string;
         rationale: string;
     };
     /**
-     * MANDATORY: Clear YES/NO Criteria
-     *
-     * The market question must have clear, unambiguous YES/NO criteria.
-     * There should be no room for interpretation in the resolution.
-     *
-     * Examples:
-     * ✅ "Will BTC be above $100,000 at 00:00 UTC Feb 1, 2026?"
-     * ✅ "Will Team A score 3+ goals?"
-     * ❌ "Will BTC perform well?" (Subjective)
-     * ❌ "Will the game be exciting?" (Subjective)
+     * HARD BAN 1: Price Prediction Markets
      */
-    CLEAR_CRITERIA: {
+    PRICE_BAN: {
         name: string;
         requirement: string;
         rationale: string;
+        blockedPatterns: string[];
     };
     /**
-     * MANDATORY: No Subjective/Unverifiable Outcomes (v6.3)
+     * HARD BAN 2: Real-Time Observable Measurement Markets
+     * Note: Measurement-period markets ARE allowed if betting closes BEFORE measurement starts.
+     * This ban is for measurements where data is observable in real-time (tweet counts, stream hours, etc.)
+     */
+    REALTIME_MEASUREMENT_BAN: {
+        name: string;
+        requirement: string;
+        rationale: string;
+        blockedPatterns: string[];
+    };
+    /**
+     * HARD BAN 3: Open-Window Deadline Markets
      *
-     * Market outcomes MUST be objectively verifiable by a third party.
-     * Questions about AI agents, personal achievements, or untrackable events
-     * are NOT allowed unless tied to an official public record.
+     * Markets where the event can happen at ANY time within a window
+     * and is INSTANTLY OBSERVABLE when it happens.
      *
-     * BLOCKED PATTERNS:
-     * ❌ "Will an AI agent do X?" (unverifiable)
-     * ❌ "Will [person] achieve [subjective goal]?" (no official source)
-     * ❌ "Will there be a breakthrough in X?" (subjective)
-     * ❌ "Will X become popular?" (subjective)
-     * ❌ "Will I/we do X?" (self-referential)
-     *
-     * ALLOWED PATTERNS:
-     * ✅ "Will @verified_twitter_account post about X?" (public record)
-     * ✅ "Will company X file for IPO?" (SEC records)
-     * ✅ "Will product X launch before date?" (official announcement)
+     * WHY THIS FAILS:
+     * "Will Drake drop an album before March 1?"
+     * - Drake drops album Feb 14. Everyone sees it on Spotify instantly.
+     * - Betting still open. Pool floods to YES. Winners get 1.02x.
+     * - Market is dead. This is NOT what pari-mutuel is for.
+     */
+    OPEN_WINDOW_BAN: {
+        name: string;
+        requirement: string;
+        rationale: string;
+        blockedPatterns: string[];
+    };
+    /**
+     * HARD BAN 4: Subjective / Unverifiable Outcomes
      */
     SUBJECTIVE_OUTCOME: {
         name: string;
@@ -117,21 +86,7 @@ export declare const PARIMUTUEL_RULES: {
         blockedPatterns: string[];
     };
     /**
-     * MANDATORY: No Manipulation Risk (v6.3)
-     *
-     * Market creators CANNOT create markets about outcomes they can directly influence.
-     * This prevents the creator from betting and then making the outcome happen.
-     *
-     * BLOCKED:
-     * ❌ Creator asking about their own project/product/actions
-     * ❌ Markets about unspecified "someone" doing something
-     * ❌ Markets where outcome depends on a small group's decision
-     *
-     * ALLOWED:
-     * ✅ Public company earnings (many stakeholders, SEC oversight)
-     * ✅ Sports outcomes (regulated, large teams)
-     * ✅ Elections (public, regulated)
-     * ✅ Weather (natural, uncontrollable)
+     * HARD BAN 5: Manipulable Outcomes
      */
     MANIPULATION_RISK: {
         name: string;
@@ -140,18 +95,26 @@ export declare const PARIMUTUEL_RULES: {
         blockedPatterns: string[];
     };
     /**
-     * APPROVED DATA SOURCES (v6.3)
-     *
-     * Markets MUST use one of these approved data sources for resolution.
-     * This ensures verifiable, dispute-free outcomes.
+     * HARD BAN 6: Unverifiable
+     */
+    UNVERIFIABLE: {
+        name: string;
+        blockedPatterns: string[];
+    };
+    /**
+     * APPROVED DATA SOURCES (v7.2)
      */
     APPROVED_SOURCES: {
-        crypto: string[];
+        esports: string[];
+        mma_boxing: string[];
         sports: string[];
-        weather: string[];
+        awards: string[];
         politics: string[];
+        entertainment: string[];
+        weather: string[];
+        tech: string[];
         finance: string[];
-        social: string[];
+        reality_tv: string[];
     };
 };
 export interface ParimutuelValidationResult {
@@ -167,18 +130,19 @@ export interface ParimutuelValidationResult {
     rulesChecked: string[];
 }
 /**
- * Validate market against parimutuel rules
+ * Validate market against parimutuel rules v7.2
  * Returns BLOCKED=true if market violates mandatory rules
  */
 export declare function validateParimutuelRules(params: {
     question: string;
     closingTime: Date;
+    scheduledMoment?: Date;
     marketType?: 'event' | 'measurement';
     eventTime?: Date;
     measurementStart?: Date;
     layer: 'official' | 'lab' | 'private';
 }): ParimutuelValidationResult;
-export declare const PARIMUTUEL_RULES_DOCUMENTATION = "\n# BAOZI PARIMUTUEL MARKET RULES v6.3\n\n## \u26A0\uFE0F STRICT ENFORCEMENT - VIOLATIONS BLOCK MARKET CREATION\n\n### Rule A: Event-Based Markets\nMarkets about specific events (sports, elections, announcements):\n- Betting MUST close AT LEAST 12 hours BEFORE the event\n- You MUST specify event_time parameter\n- Recommended buffer: 18-24 hours\n\n\u2705 ALLOWED: \"Will Team A win vs Team B? (Official: ESPN)\"\n\u274C BLOCKED: Closing time overlaps with event\n\n### Rule B: Measurement-Period Markets\nMarkets about measured values (prices, temperatures, metrics):\n- Betting MUST close BEFORE the measurement period starts\n- You MUST specify measurement_start parameter\n\n\u2705 ALLOWED: \"Will BTC be above $100k at 00:00 UTC Feb 1? (Source: CoinGecko)\"\n\u274C BLOCKED: Betting closes after measurement starts\n\n### Rule C: Objective Verifiability (v6.3 - NEW)\nOutcomes MUST be objectively verifiable by third party using public records.\n\n\u274C BLOCKED TERMS (will reject market):\n- \"ai agent\", \"an agent\", \"autonomously\"\n- \"will I\", \"will we\", \"will my\", \"will our\" (self-referential)\n- \"become popular\", \"go viral\", \"be successful\"\n- \"perform well\", \"be the best\", \"breakthrough\"\n\n\u2705 ALLOWED: Questions about public events, regulated competitions, official records\n\n### Rule D: Manipulation Prevention (v6.3 - NEW)\nCreators CANNOT make markets about outcomes they can influence.\n\n\u274C BLOCKED TERMS:\n- \"will someone\", \"will anyone\", \"will a person\"\n- \"purchase proxies\", \"buy proxies\", \"x402 payment\"\n\n\u2705 ALLOWED: Sports (regulated), weather (uncontrollable), elections (public)\n\n### Rule E: Approved Data Sources (v6.3 - REQUIRED)\nMarkets MUST use an approved data source:\n\nCRYPTO: CoinGecko, CoinMarketCap, Binance, Coinbase, TradingView\nSPORTS: ESPN, UFC, UEFA, FIFA, NBA, NFL, MLB, NHL, ATP, WTA\nWEATHER: NWS, JMA, Met Office, Weather.gov, AccuWeather\nPOLITICS: AP News, Reuters, Official Government\nFINANCE: SEC, NASDAQ, NYSE, Yahoo Finance, Bloomberg\n\n\u274C BLOCKED: No source = No market\n\n## EXAMPLE VALID MARKET\n\nQuestion: \"Will BTC be above $120,000 at 00:00 UTC Feb 15, 2026? (Source: CoinGecko)\"\nType: measurement\nMeasurement Start: 2026-02-15T00:00:00Z\nClosing Time: 2026-02-14T22:00:00Z (2h before)\n\u2705 APPROVED - Clear criteria, approved source, proper timing\n\n## EXAMPLE BLOCKED MARKETS\n\n\u274C \"Will an AI agent autonomously purchase proxies?\"\n   \u2192 BLOCKED: Contains \"ai agent\", \"autonomously\", \"purchase proxies\"\n   \u2192 Not verifiable, manipulation risk\n\n\u274C \"Will crypto go up?\"\n   \u2192 BLOCKED: No specific threshold, no data source\n\n\u274C \"Will I become successful?\"\n   \u2192 BLOCKED: Self-referential, subjective\n";
+export declare const PARIMUTUEL_RULES_DOCUMENTATION = "\n# BAOZI PARIMUTUEL MARKET RULES v7.2\n\n## STRICT ENFORCEMENT - VIOLATIONS BLOCK MARKET CREATION\n\n### TWO ALLOWED MARKET TYPES\n\n**Type A: Scheduled Event** \u2014 Outcome revealed at one moment (fight end, ceremony, announcement).\nRule: betting closes 24h+ BEFORE the event.\n\n**Type B: Measurement Period** \u2014 Data collected over defined period (chart week, opening weekend).\nRule: betting closes BEFORE the measurement period starts.\n\n### BANNED (No Exceptions)\n\n1. **Price Predictions** \u2014 Prices are continuous and observable. Pool mirrors what everyone sees.\n   BLOCKED: \"price above\", \"price below\", \"trading above\", \"market cap above\", etc.\n\n2. **Open-Window Deadline Markets** \u2014 Event can happen anytime, instantly observable.\n   BLOCKED: \"before [date]\" (when event is instantly observable), \"resign before\",\n   \"release before\", \"tweet about before\", \"IPO before\", etc.\n   WHY: \"Will Drake drop album before March 1?\" \u2014 drops Feb 14, everyone sees it, pool floods, dead.\n\n3. **Real-Time Observable Measurements** \u2014 Tweet counts, stream hours, follower counts.\n   BLOCKED: \"tweet count\", \"how many tweets\", \"stream hours\", \"follower count\", etc.\n   NOTE: Defined-period measurements (Billboard chart week, box office weekend) ARE allowed\n   if betting closes before the period starts.\n\n4. **Subjective/Unverifiable** \u2014 BLOCKED: \"go viral\", \"be successful\", \"will I\", etc.\n\n5. **Manipulable** \u2014 BLOCKED: \"will someone\", \"will anyone\", \"purchase proxies\", etc.\n\n### WHAT WORKS\n\nTYPE A (Scheduled Events):\n- Sports/MMA: \"Will [fighter] win UFC 315?\" (fight ends at scheduled time)\n- Esports: \"Who wins CS2 Grand Final?\" (match ends at scheduled time)\n- Awards: \"Who wins Best Picture?\" (announced at ceremony)\n- Government: \"Will Fed cut rates at FOMC?\" (announced at 2 PM ET)\n- Weather: \"Will it snow in NYC on Feb 28?\" (daily summary after date)\n- Reality TV: \"Who eliminated on Survivor?\" (episode airs at scheduled time)\n\nTYPE B (Measurement Periods):\n- Charts: \"Billboard Hot 100 #1?\" (tracking Fri-Thu, bet closes before Friday)\n- Charts: \"Netflix Top 10 #1?\" (tracking Mon-Sun, bet closes before Monday)\n- Box Office: \"Opening weekend #1?\" (Fri-Sun, bet closes before Friday)\n- Album: \"Will [album] debut #1?\" (first week sales, bet closes before release)\n- Economic: \"BLS unemployment rate?\" (measures past month, published first Friday)\n\n### RACE MARKETS (2-10 outcomes) \u2014 PREFERRED FORMAT\n\nMore outcomes = more spread = better underdog payouts.\nBest for: awards, charts, eliminations, tournaments, FOMC decisions.\n\n### APPROVED DATA SOURCES\n\nESPORTS: HLTV.org, lolesports.com, Liquipedia, vlr.gg\nSPORTS: ESPN, UFC.com, NFL.com, NBA.com, MLB.com, FIA\nAWARDS: Academy Awards, Recording Academy, The Game Awards, Eurovision\nGOVERNMENT: Federal Reserve, Congress.gov, AP News, Reuters\nCHARTS: Billboard.com, Netflix Top 10, Box Office Mojo\nWEATHER: NOAA, NWS (weather.gov), NHC\nTECH: Apple.com/newsroom, official press releases\n\n### QUICK TESTS\n\nType A: \"Is there a scheduled event when the answer is revealed?\" YES -> Proceed\nType B: \"Is there a defined measurement period, and does betting close before it starts?\" YES -> Proceed\nOpen-Window: \"If this happened tomorrow at 3 AM, would everyone instantly know?\" YES -> BLOCKED\n";
 /**
  * Get rules summary for AI agents
  */

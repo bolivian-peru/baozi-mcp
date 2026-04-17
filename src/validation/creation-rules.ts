@@ -1,12 +1,12 @@
 /**
- * Market Creation Validation Rules (v6.3 Compliant)
+ * Market Creation Validation Rules (v7.2 Compliant)
  *
  * Implements validation for:
  * - Rule A: Event-based markets (12-24h buffer before event)
  * - Rule B: Measurement-period markets (close before measurement starts)
- * - Rule C: Objective verifiability (v6.3) - blocks subjective outcomes
- * - Rule D: Manipulation prevention (v6.3) - blocks self-referential markets
- * - Rule E: Approved data sources (v6.3) - enforces verifiable resolution
+ * - Rule C: Objective verifiability (v7.2) - blocks subjective outcomes
+ * - Rule D: Manipulation prevention (v7.2) - blocks self-referential markets
+ * - Rule E: Approved data sources (v7.2) - enforces verifiable resolution
  * - Race market outcome validation
  * - Question and timing constraints
  */
@@ -156,7 +156,7 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
       if (bufferHours < TIMING.MIN_EVENT_BUFFER_HOURS) {
         errors.push(
           `Event buffer too short: ${bufferHours.toFixed(1)}h. ` +
-          `Minimum ${TIMING.MIN_EVENT_BUFFER_HOURS}h required (v6.3 Rule A).`
+          `Minimum ${TIMING.MIN_EVENT_BUFFER_HOURS}h required (v7.2 Rule A).`
         );
 
         // Suggest corrected closing time
@@ -168,7 +168,7 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
       } else if (bufferHours < 18) {
         warnings.push(
           `Buffer is ${bufferHours.toFixed(1)}h. ` +
-          `Recommend 18-24h for safety margin (v6.3 Rule A).`
+          `Recommend 18-24h for safety margin (v7.2 Rule A).`
         );
       }
 
@@ -192,7 +192,7 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
         const overlapHours = (params.closingTime.getTime() - params.measurementStart.getTime()) / (1000 * 60 * 60);
         errors.push(
           `INVALID: Betting closes ${overlapHours.toFixed(1)}h AFTER measurement starts. ` +
-          `This allows information advantage! (v6.3 Rule B)`
+          `This allows information advantage! (v7.2 Rule B)`
         );
 
         // Suggest corrected closing time
@@ -211,7 +211,7 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
         if (periodDays > 7) {
           warnings.push(
             `Long measurement period: ${periodDays.toFixed(0)} days. ` +
-            `Prefer 2-7 days for better UX (v6.3 guidance).`
+            `Prefer 2-7 days for better UX (v7.2 guidance).`
           );
         }
       }
@@ -286,7 +286,7 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
   }
 
   // =========================================================================
-  // v6.3 Parimutuel Rules Validation (Strict enforcement for Lab markets)
+  // v7.2 Parimutuel Rules Validation (Strict enforcement for Lab markets)
   // =========================================================================
 
   if (params.layer === 'lab') {
@@ -303,14 +303,14 @@ export function validateMarketCreation(params: CreateMarketParams): CreationVali
     if (parimutuelValidation.blocked) {
       for (const violation of parimutuelValidation.ruleViolations) {
         if (violation.severity === 'CRITICAL') {
-          errors.push(`[v6.3 ${violation.rule}] ${violation.description}`);
+          errors.push(`[v7.2 ${violation.rule}] ${violation.description}`);
         }
       }
     }
 
     // Add parimutuel warnings
     for (const warning of parimutuelValidation.warnings) {
-      warnings.push(`[v6.3] ${warning}`);
+      warnings.push(`[v7.2] ${warning}`);
     }
   }
 

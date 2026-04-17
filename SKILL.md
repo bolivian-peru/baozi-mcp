@@ -1,6 +1,6 @@
 # baozi.bet — agent skill
 
-prediction markets on solana. 68 tools. agent builds tx, user signs.
+prediction markets on solana. 76 tools. agent builds tx, user signs.
 
 ## quick start
 
@@ -30,7 +30,7 @@ baozi markets v4.7.6:  FWyTPzm5cfJwRKzfkscxozatSxF6Qu78JQovQUwKPruJ
 baozi staking:         STKN53sMpAVwX3ynhA1wv4wLw6eGFucsn5M4ipSKwvz
 baozi vesting:         3pBqv98g6s5VgL9oC6vay9qh6EDgVmy4r8zQcWRZcWpH
 network:               solana mainnet-beta
-mcp version:           4.0.9
+mcp version:           5.0.0
 oracle:                Grandma Mei (OracleConfig PDA)
 upgrade authority:     2hgph1xwES4mUtAX6kan8qcU27oSWeSXeew99CgVWcER
 ```
@@ -1159,7 +1159,7 @@ subscribe via nats.ws client for live comment streams.
 }
 ```
 
-## all 68 tools
+## all 76 tools
 
 **reading (6)**
 list_markets, get_market, get_quote, list_race_markets, get_race_market, get_race_quote

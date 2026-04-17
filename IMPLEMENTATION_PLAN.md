@@ -34,7 +34,7 @@
 ```
 /src/handlers/market-creation.ts      # High-level creation functions
 /src/builders/market-creation-tx.ts   # Transaction builders
-/src/validation/creation-rules.ts     # v6.2 rules validation
+/src/validation/creation-rules.ts     # v6.3 rules validation
 ```
 
 #### Tools Implemented (8) ✅
@@ -46,7 +46,7 @@
 | `build_create_race_market_transaction` | create_race_market_sol | ✅ 2-10 outcomes |
 | `get_creation_fees` | - | ✅ All layer fees |
 | `get_platform_fees` | - | ✅ All layer fees |
-| `get_timing_rules` | - | ✅ v6.2 rules explained |
+| `get_timing_rules` | - | ✅ v6.3 rules explained |
 | `generate_invite_hash` | - | ✅ For private markets |
 
 #### Instruction Parameters (from IDL)
@@ -70,7 +70,7 @@ pub fn create_race_market_sol(
 ) -> Result<()>
 ```
 
-#### v6.2 Rules Integration
+#### v6.3 Rules Integration
 - Rule A (Event-based): `closing_time <= event_time - 12h` (recommended 18-24h)
 - Rule B (Measurement): `closing_time < measurement_start`
 - Auto-calculate resolution_time from closing_time + buffer
@@ -380,7 +380,7 @@ RevenueConfig struct:
 │   └── market-management-tx.ts # 🆕 Phase 7
 │
 └── validation/
-    ├── market-rules.ts         # ✅ Exists (v6.2)
+    ├── market-rules.ts         # ✅ Exists (v6.3)
     ├── bet-rules.ts            # ✅ Exists
     │
     ├── creation-rules.ts       # 🆕 Phase 1
@@ -504,7 +504,7 @@ export const IX_DISCRIMINATORS = {
 
 ---
 
-## v6.2 Rules Integration
+## v6.3 Rules Integration
 
 ### Market Creation Validation
 ```typescript
@@ -517,7 +517,7 @@ function validateMarketCreation(params: CreateMarketParams): ValidationResult {
     errors.push('Question exceeds 200 characters');
   }
 
-  // Timing validation (v6.2 Rule A or B)
+  // Timing validation (v6.3 Rule A or B)
   if (params.marketType === 'event') {
     // Rule A: Event-based
     const bufferHours = (params.eventTime - params.closingTime) / 3600000;
@@ -582,7 +582,7 @@ function validateMarketCreation(params: CreateMarketParams): ValidationResult {
 ## Success Metrics
 
 1. **Coverage**: 100 tools covering all IDL instructions
-2. **Validation**: All tools validate inputs against v6.2 rules
+2. **Validation**: All tools validate inputs against v6.3 rules
 3. **Errors**: Clear error messages for invalid operations
 4. **Simulation**: All TX builders include simulation
 5. **Documentation**: Every tool has description and examples

@@ -104,7 +104,12 @@ import {
 } from './builders/market-management-transaction.js';
 
 // Config
-import { RPC_ENDPOINT, PROGRAM_ID, BET_LIMITS, TIMING, FEES } from './config.js';
+import {
+  RPC_ENDPOINT, PROGRAM_ID, BET_LIMITS, TIMING, FEES,
+  LIVE_MODE, WRITE_TOOLS, MAX_BET_SOL_OVERRIDE,
+  checkDailyLimit, recordSpend, getDailySpend, DAILY_LIMIT_SOL,
+  BAOZI_BASE_URL, MANDATE_ID,
+} from './config.js';
 
 // =============================================================================
 // TOOL SCHEMAS - Organized by Category
@@ -210,7 +215,7 @@ export const TOOLS = [
   // =========================================================================
   {
     name: 'preview_create_market',
-    description: 'Preview market creation - validates params and shows costs WITHOUT building transaction. Use before build_create_market_transaction.',
+    description: 'Preview market creation - validates params and shows costs WITHOUT building transaction. Use before build_create_market_transaction. IMPORTANT: For Lab markets, you MUST provide market_type and the corresponding timing field.',
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -218,30 +223,30 @@ export const TOOLS = [
         layer: { type: 'string', enum: ['lab', 'private'], description: 'Market layer (lab=community, private=invite-only)' },
         closing_time: { type: 'string', description: 'ISO 8601 when betting closes' },
         resolution_time: { type: 'string', description: 'ISO 8601 when market can be resolved (optional, auto-calculated)' },
-        market_type: { type: 'string', enum: ['event', 'measurement'], description: 'Event-based (Rule A) or measurement-period (Rule B)' },
-        event_time: { type: 'string', description: 'ISO 8601 event time (required for event-based markets)' },
-        measurement_start: { type: 'string', description: 'ISO 8601 measurement start (for measurement markets)' },
+        market_type: { type: 'string', enum: ['event', 'measurement'], description: 'REQUIRED for Lab: "event" (Type A) or "measurement" (Type B)' },
+        event_time: { type: 'string', description: 'ISO 8601 event time — REQUIRED for Type A markets' },
+        measurement_start: { type: 'string', description: 'ISO 8601 measurement start — REQUIRED for Type B markets' },
         measurement_end: { type: 'string', description: 'ISO 8601 measurement end (optional)' },
       },
-      required: ['question', 'layer', 'closing_time'],
+      required: ['question', 'layer', 'closing_time', 'market_type'],
     },
   },
   {
     name: 'build_create_lab_market_transaction',
-    description: 'Build unsigned transaction to create a Lab (community) market. Validates against v6.3 rules.',
+    description: 'Build unsigned transaction to create a Lab (community) market. Validates against v7.2 rules. IMPORTANT: You MUST provide market_type and the corresponding timing field (event_time for Type A, measurement_start for Type B). Without these, creation will be BLOCKED.',
     inputSchema: {
       type: 'object' as const,
       properties: {
         question: { type: 'string', description: 'Market question (max 200 chars)' },
         closing_time: { type: 'string', description: 'ISO 8601 when betting closes' },
         resolution_time: { type: 'string', description: 'ISO 8601 when market can be resolved (optional)' },
-        market_type: { type: 'string', enum: ['event', 'measurement'], description: 'Market type for validation' },
-        event_time: { type: 'string', description: 'ISO 8601 event time (for event-based)' },
-        measurement_start: { type: 'string', description: 'ISO 8601 measurement start (for measurement)' },
+        market_type: { type: 'string', enum: ['event', 'measurement'], description: 'REQUIRED: "event" (Type A — outcome at scheduled moment) or "measurement" (Type B — data over period)' },
+        event_time: { type: 'string', description: 'ISO 8601 event time — REQUIRED for Type A. Betting must close 24h+ before this.' },
+        measurement_start: { type: 'string', description: 'ISO 8601 measurement start — REQUIRED for Type B. Betting must close BEFORE this.' },
         creator_wallet: { type: 'string', description: 'Creator wallet public key' },
         invite_hash: { type: 'string', description: 'Optional 64-char hex for invite links' },
       },
-      required: ['question', 'closing_time', 'creator_wallet'],
+      required: ['question', 'closing_time', 'creator_wallet', 'market_type'],
     },
   },
   {
@@ -298,7 +303,7 @@ export const TOOLS = [
   },
   {
     name: 'get_timing_rules',
-    description: 'Get v6.3 timing rules and constraints for market creation.',
+    description: 'Get v7.2 timing rules and constraints for market creation.',
     inputSchema: {
       type: 'object' as const,
       properties: {},
@@ -307,7 +312,7 @@ export const TOOLS = [
   },
   {
     name: 'get_parimutuel_rules',
-    description: 'Get v6.3 parimutuel rules for Lab market creation. CRITICAL: Read this BEFORE creating any market. Contains blocked terms, required data sources, and validation rules that will REJECT invalid markets.',
+    description: 'Get v7.2 parimutuel rules for Lab market creation. CRITICAL: Read this BEFORE creating any market. Contains blocked terms, required data sources, and validation rules that will REJECT invalid markets.',
     inputSchema: {
       type: 'object' as const,
       properties: {},
@@ -316,12 +321,16 @@ export const TOOLS = [
   },
   {
     name: 'validate_market_question',
-    description: 'Validate a market question against v6.3 rules BEFORE attempting to create it. Returns whether the question would be blocked and why.',
+    description: 'Validate a market question against v7.2 rules BEFORE attempting to create it. Returns whether the question would be blocked and why. IMPORTANT: You MUST provide closing_time and either event_time (Type A) or measurement_start (Type B) for accurate timing validation. Without timing params, many invalid markets will pass.',
     inputSchema: {
       type: 'object' as const,
       properties: {
         question: { type: 'string', description: 'Market question to validate' },
         layer: { type: 'string', enum: ['lab', 'private'], description: 'Market layer (default: lab)' },
+        closing_time: { type: 'string', description: 'ISO 8601 when betting closes (REQUIRED for timing validation)' },
+        market_type: { type: 'string', enum: ['event', 'measurement'], description: 'Type A (event) or Type B (measurement)' },
+        event_time: { type: 'string', description: 'ISO 8601 event time — REQUIRED for Type A (scheduled event) markets' },
+        measurement_start: { type: 'string', description: 'ISO 8601 measurement start — REQUIRED for Type B (measurement period) markets' },
       },
       required: ['question'],
     },
@@ -484,13 +493,26 @@ export const TOOLS = [
       required: [],
     },
   },
+  {
+    name: 'generate_share_card',
+    description: 'Generate a share card image URL for a market. Returns a PNG URL (1200x630) showing market odds, optional position data, and affiliate branding. Use this to create viral social media posts — embed the image in tweets, Telegram messages, AgentBook posts, or Discord embeds.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key (Solana PDA)' },
+        wallet: { type: 'string', description: 'Optional: wallet public key to show position + potential payout on the card' },
+        ref: { type: 'string', description: 'Optional: affiliate referral code to display on the card' },
+      },
+      required: ['market'],
+    },
+  },
 
   // =========================================================================
   // VALIDATION
   // =========================================================================
   {
     name: 'validate_market_params',
-    description: 'Validate market parameters against v6.3 timing rules.',
+    description: 'Validate market parameters against v7.2 timing rules.',
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -1042,6 +1064,99 @@ export const TOOLS = [
       required: ['race_market', 'reason', 'authority_wallet'],
     },
   },
+
+  // =========================================================================
+  // ARENA (Agent Competitive Scoring)
+  // =========================================================================
+  {
+    name: 'get_arena_leaderboard',
+    description: 'Get the current Agent Arena weekly leaderboard with calibration-based scoring. Shows top predictors ranked by composite score (calibration 40%, ROI 30%, volume 15%, consistency 15%).',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        paper: { type: 'boolean', description: 'If true, show paper trading leaderboard instead of real bets' },
+        limit: { type: 'number', description: 'Number of entries to return (default 50, max 100)' },
+      },
+    },
+  },
+  {
+    name: 'get_arena_season',
+    description: 'Get Agent Arena results for a specific past season by ID.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        season_id: { type: 'number', description: 'Season ID' },
+        paper: { type: 'boolean', description: 'If true, show paper trading leaderboard' },
+      },
+      required: ['season_id'],
+    },
+  },
+  {
+    name: 'submit_paper_trade',
+    description: 'Submit a paper (simulated) prediction to the Agent Arena. No SOL required. Scored on calibration accuracy when market resolves.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        wallet_address: { type: 'string', description: 'Your wallet address' },
+        market_pda: { type: 'string', description: 'Market public key to predict on' },
+        predicted_side: { type: 'string', enum: ['YES', 'NO'], description: 'Your prediction' },
+        confidence: { type: 'number', description: 'Confidence level 0.01-0.99 (e.g. 0.75 = 75% confident)' },
+      },
+      required: ['wallet_address', 'market_pda', 'predicted_side', 'confidence'],
+    },
+  },
+
+  // =========================================================================
+  // INTEL (x402 Premium Market Intelligence)
+  // =========================================================================
+  {
+    name: 'get_intel_sentiment',
+    description: 'Get market sentiment analysis including comment sentiment, bet momentum, and pool trends. Costs 0.001 SOL via x402 payment protocol.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key' },
+        payment_tx: { type: 'string', description: 'Payment transaction signature (base58). Omit to get pricing info.' },
+      },
+      required: ['market'],
+    },
+  },
+  {
+    name: 'get_intel_whale_moves',
+    description: 'Get whale position data for a market (positions > 1 SOL, whale sentiment split). Costs 0.002 SOL via x402 payment protocol.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key' },
+        payment_tx: { type: 'string', description: 'Payment transaction signature (base58). Omit to get pricing info.' },
+      },
+      required: ['market'],
+    },
+  },
+  {
+    name: 'get_intel_resolution_forecast',
+    description: 'Get resolution forecast including closing time, tier, implied probability, and prediction. Costs 0.005 SOL via x402 payment protocol.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key' },
+        payment_tx: { type: 'string', description: 'Payment transaction signature (base58). Omit to get pricing info.' },
+      },
+      required: ['market'],
+    },
+  },
+  {
+    name: 'get_intel_market_alpha',
+    description: 'Get cross-market alpha signals including correlation analysis, category skew, and alpha opportunities. Costs 0.003 SOL via x402 payment protocol.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        market: { type: 'string', description: 'Market public key' },
+        payment_tx: { type: 'string', description: 'Payment transaction signature (base58). Omit to get pricing info.' },
+      },
+      required: ['market'],
+    },
+  },
 ];
 
 // =============================================================================
@@ -1052,6 +1167,39 @@ export async function handleTool(
   name: string,
   args: Record<string, unknown>
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
+  // Safe-mode gate: block write tools unless BAOZI_LIVE=1
+  if (WRITE_TOOLS.has(name) && !LIVE_MODE) {
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify({
+          success: false,
+          error: 'SAFE MODE: Write tools are disabled by default. Set BAOZI_LIVE=1 to enable transaction building.',
+          tool: name,
+          mode: 'safe',
+          configExample: {
+            mcpServers: {
+              baozi: {
+                command: 'npx',
+                args: ['@baozi.bet/mcp-server'],
+                env: {
+                  BAOZI_LIVE: '1',
+                  BAOZI_MAX_BET_SOL: '10',
+                  BAOZI_DAILY_LIMIT_SOL: '50',
+                },
+              },
+            },
+          },
+          readOnlyAlternatives: [
+            'list_markets', 'get_market', 'get_quote',
+            'list_race_markets', 'get_race_market', 'get_race_quote',
+            'get_positions', 'get_claimable', 'validate_bet', 'validate_market_params',
+          ],
+        }, null, 2),
+      }],
+    };
+  }
+
   try {
     switch (name) {
       // =====================================================================
@@ -1249,6 +1397,34 @@ export async function handleTool(
         return successResponse(info);
       }
 
+      case 'generate_share_card': {
+        const market = args.market as string;
+        if (!market) return errorResponse('market is required');
+        const wallet = args.wallet as string | undefined;
+        const ref = args.ref as string | undefined;
+        const baseUrl = 'https://baozi.bet';
+        const params = new URLSearchParams({ market });
+        if (wallet) params.set('wallet', wallet);
+        if (ref) params.set('ref', ref);
+        const imageUrl = `${baseUrl}/api/share/card?${params.toString()}`;
+        const marketUrl = ref
+          ? `${baseUrl}/market/${market}?ref=${ref}`
+          : `${baseUrl}/market/${market}`;
+        return successResponse({
+          imageUrl,
+          marketUrl,
+          market,
+          wallet: wallet || null,
+          ref: ref || null,
+          usage: {
+            twitter: `Share the imageUrl as a Twitter card image, with marketUrl as the link`,
+            telegram: `Send imageUrl as a photo with marketUrl in the caption`,
+            agentbook: `POST to /api/agentbook/posts with the imageUrl in your content`,
+            embed: `Use imageUrl directly as an <img> src — it returns a 1200x630 PNG`,
+          },
+        });
+      }
+
       // =====================================================================
       // VALIDATION
       // =====================================================================
@@ -1306,9 +1482,13 @@ export async function handleTool(
         if (!marketPubkey || !outcome || amountSol === undefined || !userWallet) {
           return errorResponse('market, outcome, amount_sol, and user_wallet are required');
         }
-        if (amountSol < BET_LIMITS.MIN_BET_SOL || amountSol > BET_LIMITS.MAX_BET_SOL) {
-          return errorResponse(`Amount must be between ${BET_LIMITS.MIN_BET_SOL} and ${BET_LIMITS.MAX_BET_SOL} SOL`);
+        if (amountSol < BET_LIMITS.MIN_BET_SOL || amountSol > MAX_BET_SOL_OVERRIDE) {
+          return errorResponse(`Amount must be between ${BET_LIMITS.MIN_BET_SOL} and ${MAX_BET_SOL_OVERRIDE} SOL`);
         }
+        const dailyLimitError = checkDailyLimit(amountSol);
+        if (dailyLimitError) return errorResponse(dailyLimitError);
+        const mandateError = await checkMandate('bet', userWallet, { amountSol, marketPda: marketPubkey });
+        if (mandateError) return errorResponse(`Mandate: ${mandateError}`);
         const result = await fetchAndBuildBetTransaction({ marketPda: marketPubkey, userWallet, outcome, amountSol });
         if (result.error || !result.transaction) {
           return errorResponse(result.error || 'Failed to build transaction');
@@ -1316,11 +1496,18 @@ export async function handleTool(
         const connection = new Connection(RPC_ENDPOINT, 'confirmed');
         const simulation = await simulateBetTransaction(result.transaction.transaction, new PublicKey(userWallet), connection);
         const quote = await getQuote(marketPubkey, outcome === 'yes' ? 'Yes' : 'No', amountSol);
+        recordSpend(amountSol);
+        const signUrl = await createSignUrl(result.transaction.serializedTx, {
+          type: 'bet', market: marketPubkey, outcome, amountSol,
+        });
         return successResponse({
           transaction: { serialized: result.transaction.serializedTx, positionPda: result.transaction.positionPda.toBase58() },
           simulation: { success: simulation.success, unitsConsumed: simulation.unitsConsumed, error: simulation.error },
           quote: quote.valid ? { expectedPayoutSol: quote.expectedPayoutSol, potentialProfitSol: quote.potentialProfitSol } : null,
-          instructions: 'Sign the transaction with your wallet and send to Solana network',
+          ...(signUrl ? { signUrl: signUrl.signUrl, signUrlExpires: signUrl.expiresAt } : {}),
+          instructions: signUrl
+            ? `Send this link to the user to sign: ${signUrl.signUrl}`
+            : 'Sign the transaction with your wallet and send to Solana network',
         });
       }
 
@@ -1332,14 +1519,26 @@ export async function handleTool(
         if (!marketPubkey || outcomeIndex === undefined || amountSol === undefined || !userWallet) {
           return errorResponse('market, outcome_index, amount_sol, and user_wallet are required');
         }
+        if (amountSol < BET_LIMITS.MIN_BET_SOL || amountSol > MAX_BET_SOL_OVERRIDE) {
+          return errorResponse(`Amount must be between ${BET_LIMITS.MIN_BET_SOL} and ${MAX_BET_SOL_OVERRIDE} SOL`);
+        }
+        const dailyLimitError = checkDailyLimit(amountSol);
+        if (dailyLimitError) return errorResponse(dailyLimitError);
         const result = await fetchAndBuildRaceBetTransaction({ raceMarketPda: marketPubkey, outcomeIndex, amountSol, userWallet });
         if (result.error || !result.transaction) {
           return errorResponse(result.error || 'Failed to build transaction');
         }
+        recordSpend(amountSol);
+        const signUrl = await createSignUrl(result.transaction.serializedTx, {
+          type: 'race_bet', market: marketPubkey, outcomeIndex, amountSol,
+        });
         return successResponse({
           transaction: { serialized: result.transaction.serializedTx, positionPda: result.transaction.positionPda },
           marketId: result.marketId.toString(),
-          instructions: 'Sign the transaction with your wallet and send to Solana network',
+          ...(signUrl ? { signUrl: signUrl.signUrl, signUrlExpires: signUrl.expiresAt } : {}),
+          instructions: signUrl
+            ? `Send this link to the user to sign: ${signUrl.signUrl}`
+            : 'Sign the transaction with your wallet and send to Solana network',
         });
       }
 
@@ -1534,11 +1733,38 @@ export async function handleTool(
         const resolutionTime = args.resolution_time as string | undefined;
         const marketType = args.market_type as 'event' | 'measurement' | undefined;
         const eventTime = args.event_time as string | undefined;
+        const measurementStart = args.measurement_start as string | undefined;
         const inviteHash = args.invite_hash as string | undefined;
         const creatorWallet = args.creator_wallet as string;
 
         if (!question || !closingTime || !creatorWallet) {
           return errorResponse('question, closing_time, and creator_wallet are required');
+        }
+
+        // v7.2: Enforce market type classification for lab markets
+        if (!marketType) {
+          return errorResponse(
+            'market_type is REQUIRED for Lab markets (v7.2 rules). ' +
+            'Use "event" (Type A: outcome at scheduled moment, e.g. fight result, award winner) ' +
+            'or "measurement" (Type B: data over period, e.g. Billboard chart week, opening weekend). ' +
+            'Also provide event_time (Type A) or measurement_start (Type B).'
+          );
+        }
+
+        if (marketType === 'event' && !eventTime) {
+          return errorResponse(
+            'event_time is REQUIRED for Type A (event) markets. ' +
+            'Provide the ISO 8601 datetime when the outcome is revealed (e.g. fight end, ceremony, announcement). ' +
+            'Betting must close 24h+ before this time.'
+          );
+        }
+
+        if (marketType === 'measurement' && !measurementStart) {
+          return errorResponse(
+            'measurement_start is REQUIRED for Type B (measurement) markets. ' +
+            'Provide the ISO 8601 datetime when the measurement period begins. ' +
+            'Betting must close BEFORE this time.'
+          );
         }
 
         const result = await createLabMarket({
@@ -1548,6 +1774,7 @@ export async function handleTool(
           resolutionTime,
           marketType,
           eventTime,
+          measurementStart,
           inviteHash,
           creatorWallet,
         });
@@ -1687,18 +1914,37 @@ export async function handleTool(
       case 'validate_market_question': {
         const question = args.question as string;
         const layer = (args.layer as 'lab' | 'private') || 'lab';
+        const closingTimeStr = args.closing_time as string | undefined;
+        const marketType = args.market_type as 'event' | 'measurement' | undefined;
+        const eventTimeStr = args.event_time as string | undefined;
+        const measurementStartStr = args.measurement_start as string | undefined;
 
         if (!question) {
           return errorResponse('question is required');
         }
 
-        // Use a dummy closing time for validation (only question content matters for v6.3 rules)
-        const dummyClosingTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const closingTime = closingTimeStr
+          ? new Date(closingTimeStr)
+          : new Date(Date.now() + 24 * 60 * 60 * 1000);
+        const eventTime = eventTimeStr ? new Date(eventTimeStr) : undefined;
+        const measurementStart = measurementStartStr ? new Date(measurementStartStr) : undefined;
+
+        // Warn if no timing params provided — validation will be incomplete
+        const timingWarnings: string[] = [];
+        if (!closingTimeStr) {
+          timingWarnings.push('WARNING: No closing_time provided. Timing validation skipped. Provide closing_time + event_time (Type A) or measurement_start (Type B) for complete validation.');
+        }
+        if (layer === 'lab' && closingTimeStr && !eventTime && !measurementStart) {
+          timingWarnings.push('WARNING: No event_time or measurement_start provided. v7.2 requires Type A (event_time) or Type B (measurement_start) for Lab markets. Market creation WILL be blocked without these.');
+        }
 
         const validation = validateParimutuelRules({
           question,
-          closingTime: dummyClosingTime,
+          closingTime,
           layer,
+          marketType,
+          eventTime,
+          measurementStart,
         });
 
         return successResponse({
@@ -1706,11 +1952,20 @@ export async function handleTool(
           wouldBeBlocked: validation.blocked,
           valid: !validation.blocked,
           errors: validation.errors,
-          warnings: validation.warnings,
+          warnings: [...timingWarnings, ...validation.warnings],
           ruleViolations: validation.ruleViolations,
+          rulesChecked: validation.rulesChecked,
+          timingParamsProvided: {
+            closing_time: !!closingTimeStr,
+            event_time: !!eventTimeStr,
+            measurement_start: !!measurementStartStr,
+            market_type: marketType || 'not specified',
+          },
           suggestion: validation.blocked
-            ? 'Question contains blocked terms. Rephrase using objective, verifiable criteria with an approved data source.'
-            : 'Question passes v6.3 validation. Remember to also specify proper timing parameters.',
+            ? 'Question violates v7.2 rules. Fix the errors above before creating.'
+            : timingWarnings.length > 0
+            ? 'Question text passes v7.2 content checks, but timing validation is INCOMPLETE. Provide all timing parameters for full validation.'
+            : 'Question passes full v7.2 validation.',
         });
       }
 
@@ -2203,6 +2458,95 @@ export async function handleTool(
         });
       }
 
+      // =====================================================================
+      // ARENA TOOLS
+      // =====================================================================
+      case 'get_arena_leaderboard': {
+        const paper = args.paper === true;
+        const limit = Math.min(typeof args.limit === 'number' ? args.limit : 50, 100);
+        const resp = await fetch(`${BAOZI_BASE_URL}/api/arena/current?paper=${paper}&limit=${limit}`, {
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!resp.ok) return errorResponse('Failed to fetch arena leaderboard');
+        const data = await resp.json();
+        return successResponse(data);
+      }
+
+      case 'get_arena_season': {
+        const seasonId = args.season_id as number;
+        if (seasonId === undefined) return errorResponse('season_id is required');
+        const paper = args.paper === true;
+        const resp = await fetch(`${BAOZI_BASE_URL}/api/arena/seasons/${seasonId}?paper=${paper}`, {
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!resp.ok) return errorResponse('Season not found');
+        const data = await resp.json();
+        return successResponse(data);
+      }
+
+      case 'submit_paper_trade': {
+        const walletAddress = args.wallet_address as string;
+        const marketPda = args.market_pda as string;
+        const predictedSide = args.predicted_side as string;
+        const confidence = args.confidence as number;
+        if (!walletAddress || !marketPda || !predictedSide || confidence === undefined) {
+          return errorResponse('wallet_address, market_pda, predicted_side, and confidence are required');
+        }
+        const resp = await fetch(`${BAOZI_BASE_URL}/api/arena/paper-trade`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress, marketPda, predictedSide, confidence }),
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          return errorResponse((err as { error?: string }).error || 'Failed to submit paper trade');
+        }
+        const data = await resp.json();
+        return successResponse(data);
+      }
+
+      // =====================================================================
+      // INTEL TOOLS (x402 Payment Protocol)
+      // =====================================================================
+      case 'get_intel_sentiment':
+      case 'get_intel_whale_moves':
+      case 'get_intel_resolution_forecast':
+      case 'get_intel_market_alpha': {
+        const intelMarket = args.market as string;
+        const paymentTx = args.payment_tx as string | undefined;
+        if (!intelMarket) return errorResponse('market is required');
+
+        const intelType = name.replace('get_intel_', '').replace(/_/g, '-');
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (paymentTx) headers['X-Payment-Tx'] = paymentTx;
+
+        const resp = await fetch(`${BAOZI_BASE_URL}/api/intel/${intelType}?market=${intelMarket}`, {
+          headers,
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (resp.status === 402) {
+          const paymentInfo = await resp.json() as { price?: unknown; paymentAddress?: unknown; instructions?: unknown };
+          return successResponse({
+            requiresPayment: true,
+            price: paymentInfo.price,
+            currency: 'SOL',
+            paymentAddress: paymentInfo.paymentAddress,
+            instructions: paymentInfo.instructions,
+            hint: 'Send the specified SOL amount to the payment address, then retry with the transaction signature in payment_tx parameter.',
+          });
+        }
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          return errorResponse((err as { error?: string }).error || `Intel request failed (${resp.status})`);
+        }
+
+        const data = await resp.json();
+        return successResponse(data);
+      }
+
       default:
         return errorResponse(`Unknown tool: ${name}`);
     }
@@ -2214,6 +2558,62 @@ export async function handleTool(
 // =============================================================================
 // HELPERS
 // =============================================================================
+
+/**
+ * Create a sign-link URL for a transaction (best-effort, non-blocking).
+ * Returns null if the API is unavailable or sign-link creation fails.
+ */
+async function createSignUrl(
+  serializedTx: string,
+  metadata: Record<string, unknown>
+): Promise<{ signUrl: string; expiresAt: string } | null> {
+  try {
+    const resp = await fetch(`${BAOZI_BASE_URL}/api/sign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ transaction: serializedTx, metadata }),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!resp.ok) return null;
+    const data = await resp.json() as { signUrl?: string; expiresAt?: string };
+    if (data.signUrl) return { signUrl: data.signUrl, expiresAt: data.expiresAt || '' };
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Verify a mandate for a specific action (when BAOZI_MANDATE_ID is set).
+ * Returns error string if denied, null if approved or no mandate configured.
+ */
+async function checkMandate(
+  action: string,
+  granteeWallet: string,
+  details?: { amountSol?: number; layer?: string; marketPda?: string }
+): Promise<string | null> {
+  if (!MANDATE_ID) return null;
+  try {
+    const resp = await fetch(`${BAOZI_BASE_URL}/api/mandates/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        mandateId: MANDATE_ID,
+        granteeWallet,
+        action,
+        actionDetails: details,
+      }),
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await resp.json() as { approved: boolean; error?: string };
+    if (!data.approved) {
+      return data.error || 'Mandate denied this action';
+    }
+    return null;
+  } catch {
+    return 'Mandate verification failed (network error)';
+  }
+}
 
 function successResponse(data: unknown): { content: Array<{ type: string; text: string }> } {
   return {

@@ -1,17 +1,17 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.bolivian-peru/baozi-mcp",
-  "description": "68 tools for AI agents to interact with Solana prediction markets on Baozi.bet",
+  "description": "76 tools for AI agents to interact with Solana prediction markets on Baozi.bet. Safe-by-default (set BAOZI_LIVE=1 to enable writes).",
   "repository": {
     "url": "https://github.com/bolivian-peru/baozi-mcp",
     "source": "github"
   },
-  "version": "4.0.10",
+  "version": "5.0.0",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@baozi.bet/mcp-server",
-      "version": "4.0.10",
+      "version": "5.0.0",
       "transport": {
         "type": "stdio"
       },
@@ -29,6 +29,27 @@
           "format": "string",
           "isSecret": true,
           "name": "HELIUS_RPC_URL"
+        },
+        {
+          "description": "Set to '1' to enable write tools (transaction builders). Safe mode by default.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "BAOZI_LIVE"
+        },
+        {
+          "description": "Max single bet in SOL (can only lower, never above 100)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "BAOZI_MAX_BET_SOL"
+        },
+        {
+          "description": "Total SOL/day across all bets (unlimited if not set)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "BAOZI_DAILY_LIMIT_SOL"
         }
       ]
     }

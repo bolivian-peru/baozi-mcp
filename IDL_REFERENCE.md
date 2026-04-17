@@ -289,9 +289,9 @@ update_creator_profile:       [63, 59, 104, 81, 205, 150, 223, 52]
 
 | Layer | Creation Fee | Platform Fee | Affiliate Fee | Creator Fee (max) |
 |-------|-------------|--------------|---------------|-------------------|
-| Official | 0.1 SOL | 2.5% (250 bps) | 1% (100 bps) | 0.5% (50 bps) |
-| Lab | 0.04 SOL | 3% (300 bps) | 1% (100 bps) | 0.5% (50 bps) |
-| Private | 0.04 SOL | 2% (200 bps) | 1% (100 bps) | 0.5% (50 bps) |
+| Official | 0.01 SOL | 2.5% (250 bps) | 1% (100 bps) | 0.5% (50 bps) |
+| Lab | 0.01 SOL | 3% (300 bps) | 1% (100 bps) | 0.5% (50 bps) |
+| Private | 0.01 SOL | 2% (200 bps) | 1% (100 bps) | 0.5% (50 bps) |
 
 **Fee Distribution** (from platform fee on claims):
 ```
@@ -303,7 +303,7 @@ Platform Fee (e.g., 3%)
 
 ---
 
-## Timing Rules (v6.2)
+## Timing Rules (v6.3)
 
 ### Rule A: Event-Based Markets
 ```
@@ -379,7 +379,7 @@ net_payout = 16.67 - 0.20 = 16.47 SOL
 | `build_create_race_market_transaction` | Build race market creation tx |
 | `get_creation_fees` | Get creation fees by layer |
 | `get_platform_fees` | Get platform fees by layer |
-| `get_timing_rules` | Get v6.2 timing rule details |
+| `get_timing_rules` | Get v6.3 timing rule details |
 | `generate_invite_hash` | Generate random invite hash |
 
 ### Betting (2 tools)
@@ -466,7 +466,7 @@ net_payout = 16.67 - 0.20 = 16.47 SOL
 |------|---------|
 | `get_positions` | Get user positions + stats |
 | `get_claimable` | Get claimable positions |
-| `validate_market_params` | Validate v6.2 timing rules |
+| `validate_market_params` | Validate v6.3 timing rules |
 | `validate_bet` | Validate bet constraints |
 
 ### Simulation (1 tool)
@@ -589,7 +589,7 @@ For autonomous agents, use policy-controlled signing:
 1. **Always validate before building** - Use `validate_market_params` and `validate_bet`
 2. **Always simulate before returning** - Use `simulate_transaction` to catch errors
 3. **Check market status** - Verify market is `Active` before betting, `Resolved` before claiming
-4. **Respect timing rules** - Follow v6.2 buffer requirements
+4. **Respect timing rules** - Follow v6.3 buffer requirements
 5. **Use affiliate codes** - Include `affiliate_code` to earn referral fees
 6. **Return base64 transactions** - Never sign transactions, always return unsigned
 

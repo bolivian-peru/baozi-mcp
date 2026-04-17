@@ -1,15 +1,19 @@
 /**
- * BAOZI PARIMUTUEL MARKET RULES v6.3
+ * BAOZI PARIMUTUEL MARKET RULES v7.2
  *
  * STRICT ENFORCEMENT - All Lab markets MUST comply with these rules.
  * AI agents creating markets through MCP MUST validate against these rules.
  * Markets that don't comply will be BLOCKED from creation.
  *
- * v6.3 UPDATES:
- * - Added SUBJECTIVE_OUTCOME rule to block unverifiable questions
- * - Added MANIPULATION_RISK rule to prevent self-referential markets
- * - Enhanced data source validation with strict requirements
- * - Added blocked keywords and patterns detection
+ * v7.2 TWO ALLOWED TYPES:
+ * Type A: Scheduled Event — outcome revealed at one moment. Betting closes 24h before.
+ * Type B: Measurement Period — data collected over defined period. Betting closes BEFORE period starts.
+ *
+ * BANNED:
+ * - Price predictions (observable continuously)
+ * - Open-window deadline markets (event observable instantly when it happens)
+ * - Subjective/unverifiable outcomes
+ * - Manipulable outcomes
  */
 
 // =============================================================================
@@ -17,177 +21,154 @@
 // =============================================================================
 
 export const PARIMUTUEL_RULES = {
-  version: '6.3',
+  version: '7.2',
 
   /**
-   * RULE A: Event-Based Markets
-   *
-   * For markets about specific events (sports, elections, announcements):
-   * - Betting must close AT LEAST 12 hours BEFORE the event
-   * - Recommended buffer: 18-24 hours
-   * - Event time must be explicitly specified
-   *
-   * RATIONALE: Prevents late-breaking information from giving unfair advantage
-   *
-   * Examples:
-   * ✅ "Will Team A win vs Team B?" + event_time = game_start
-   * ✅ "Will Company X announce earnings above $1B?" + event_time = announcement
-   * ❌ "Will it rain tomorrow?" (no clear event time)
+   * TYPE A: Scheduled Event Markets
+   * Outcome revealed at one specific moment (fight end, ceremony, announcement).
+   * Betting closes 24h+ before the event.
    */
-  RULE_A: {
-    name: 'Event-Based Markets',
-    minBufferHours: 12,
-    recommendedBufferHours: 24,
-    requirement: 'Betting must close 12+ hours BEFORE the event',
-    rationale: 'Prevents information advantage from late-breaking news',
+  TYPE_A: {
+    name: 'Scheduled Event',
+    minBufferHours: 24,
+    requirement: 'Betting must close 24h+ BEFORE the scheduled event.',
+    rationale: 'Nobody has information about the outcome while betting is open.',
   },
 
   /**
-   * RULE B: Measurement-Period Markets
-   *
-   * For markets about measured values (prices, temperatures, metrics):
-   * - Betting must close BEFORE the measurement period starts
-   * - measurement_start must be explicitly specified
-   * - Recommended: betting closes 1-2 hours before measurement
-   *
-   * RATIONALE: Prevents anyone from betting with foreknowledge of measurements
-   *
-   * Examples:
-   * ✅ "Will BTC be above $100k at 00:00 UTC Feb 1?" + measurement_start = Feb 1 00:00
-   * ✅ "Will Tokyo have snowfall on Feb 4?" + measurement_start = Feb 4 00:00
-   * ❌ "Will BTC close above $100k on Feb 2?" + betting_closes = Feb 2 23:59 (VIOLATION!)
+   * TYPE B: Measurement-Period Markets
+   * Data collected over a defined period (chart tracking week, opening weekend, etc.).
+   * Betting closes BEFORE the measurement period starts.
    */
-  RULE_B: {
-    name: 'Measurement-Period Markets',
-    requirement: 'Betting must close BEFORE measurement period starts',
-    rationale: 'Prevents betting with foreknowledge of measured values',
-    recommendedBufferHours: 2,
+  TYPE_B: {
+    name: 'Measurement Period',
+    requirement: 'Betting must close BEFORE the measurement period starts.',
+    rationale: 'Nobody has any measurement data while betting is open.',
   },
 
   /**
-   * MANDATORY: Verifiable Data Source
-   *
-   * Every market question MUST specify or clearly imply a verifiable data source.
-   * This ensures objective resolution and prevents disputes.
-   *
-   * Examples:
-   * ✅ "Will BTC be above $100k? (Source: CoinGecko)"
-   * ✅ "Will it snow in Tokyo? (JMA official record)"
-   * ✅ "Will Real Madrid win?" (Implied: official UEFA result)
-   * ❌ "Will the economy improve?" (No verifiable source)
-   * ❌ "Will Claude be the best AI?" (Subjective, no source)
+   * HARD BAN 1: Price Prediction Markets
    */
-  DATA_SOURCE: {
-    name: 'Verifiable Data Source',
-    requirement: 'Question must specify or clearly imply a verifiable data source',
-    rationale: 'Ensures objective resolution and prevents disputes',
+  PRICE_BAN: {
+    name: 'Price Prediction Ban',
+    requirement: 'All price prediction markets are BANNED',
+    rationale: 'Prices are continuous, observable, and autocorrelated. Pool just mirrors what everyone can see.',
+    blockedPatterns: [
+      'price above', 'price below', 'price at', 'price by',
+      'trading above', 'trading below',
+      'market cap above', 'market cap below',
+      'ath', 'all-time high', 'floor price',
+    ],
   },
 
   /**
-   * MANDATORY: Clear YES/NO Criteria
-   *
-   * The market question must have clear, unambiguous YES/NO criteria.
-   * There should be no room for interpretation in the resolution.
-   *
-   * Examples:
-   * ✅ "Will BTC be above $100,000 at 00:00 UTC Feb 1, 2026?"
-   * ✅ "Will Team A score 3+ goals?"
-   * ❌ "Will BTC perform well?" (Subjective)
-   * ❌ "Will the game be exciting?" (Subjective)
+   * HARD BAN 2: Real-Time Observable Measurement Markets
+   * Note: Measurement-period markets ARE allowed if betting closes BEFORE measurement starts.
+   * This ban is for measurements where data is observable in real-time (tweet counts, stream hours, etc.)
    */
-  CLEAR_CRITERIA: {
-    name: 'Clear Resolution Criteria',
-    requirement: 'Question must have unambiguous YES/NO criteria',
-    rationale: 'Prevents disputes and ensures fair resolution',
+  REALTIME_MEASUREMENT_BAN: {
+    name: 'Real-Time Observable Measurement Ban',
+    requirement: 'Markets measuring real-time observable data are BANNED (tweet counts, stream hours, follower counts)',
+    rationale: 'Data is observable in real-time during the period. Late bettors have edge.',
+    blockedPatterns: [
+      'tweet count', 'how many tweets',
+      'stream count', 'stream hours',
+      'follower count', 'view count',
+      'total volume', 'total burned',
+      'gains most', 'average over',
+    ],
   },
 
   /**
-   * MANDATORY: No Subjective/Unverifiable Outcomes (v6.3)
+   * HARD BAN 3: Open-Window Deadline Markets
    *
-   * Market outcomes MUST be objectively verifiable by a third party.
-   * Questions about AI agents, personal achievements, or untrackable events
-   * are NOT allowed unless tied to an official public record.
+   * Markets where the event can happen at ANY time within a window
+   * and is INSTANTLY OBSERVABLE when it happens.
    *
-   * BLOCKED PATTERNS:
-   * ❌ "Will an AI agent do X?" (unverifiable)
-   * ❌ "Will [person] achieve [subjective goal]?" (no official source)
-   * ❌ "Will there be a breakthrough in X?" (subjective)
-   * ❌ "Will X become popular?" (subjective)
-   * ❌ "Will I/we do X?" (self-referential)
-   *
-   * ALLOWED PATTERNS:
-   * ✅ "Will @verified_twitter_account post about X?" (public record)
-   * ✅ "Will company X file for IPO?" (SEC records)
-   * ✅ "Will product X launch before date?" (official announcement)
+   * WHY THIS FAILS:
+   * "Will Drake drop an album before March 1?"
+   * - Drake drops album Feb 14. Everyone sees it on Spotify instantly.
+   * - Betting still open. Pool floods to YES. Winners get 1.02x.
+   * - Market is dead. This is NOT what pari-mutuel is for.
+   */
+  OPEN_WINDOW_BAN: {
+    name: 'Open-Window Deadline Ban',
+    requirement: 'All "before [deadline]" markets where event is instantly observable are BANNED',
+    rationale: 'Event observable instantly when it happens. Pool floods to obvious answer. Winners get ~1.01x. Dead market.',
+    blockedPatterns: [
+      'resign before', 'quit before', 'retire before',
+      'drop before', 'release before', 'launch before',
+      'announce before', 'announce by', 'announced before',
+      'list before', 'listed before',
+      'approve before', 'approved before',
+      'covered before', 'covered by news',
+      'sign before', 'signed before',
+      'file before', 'filed before',
+      'publish before', 'published before',
+      'report before', 'reported before',
+      'reveal before', 'revealed before',
+      'confirm before', 'confirmed before',
+      'tweet about', 'post about',
+      'sell out within', 'sell out before',
+      'bring back before',
+      'ipo before',
+      'will ever',
+    ],
+  },
+
+  /**
+   * HARD BAN 4: Subjective / Unverifiable Outcomes
    */
   SUBJECTIVE_OUTCOME: {
     name: 'Objective Verifiability',
     requirement: 'Outcome must be objectively verifiable by third party with public record',
     rationale: 'Prevents unresolvable disputes and manipulation',
     blockedPatterns: [
-      'ai agent',
-      'an agent',
-      'autonomously',
-      'become popular',
-      'go viral',
-      'be successful',
-      'perform well',
-      'be the best',
-      'breakthrough',
-      'revolutionary',
-      'will i ',
-      'will we ',
-      'will my ',
-      'will our ',
+      'ai agent', 'an agent', 'autonomously',
+      'become popular', 'go viral', 'be successful',
+      'perform well', 'be the best', 'breakthrough',
+      'revolutionary', 'dominate', 'take over',
+      'will i ', 'will we ', 'will my ', 'will our ',
     ],
   },
 
   /**
-   * MANDATORY: No Manipulation Risk (v6.3)
-   *
-   * Market creators CANNOT create markets about outcomes they can directly influence.
-   * This prevents the creator from betting and then making the outcome happen.
-   *
-   * BLOCKED:
-   * ❌ Creator asking about their own project/product/actions
-   * ❌ Markets about unspecified "someone" doing something
-   * ❌ Markets where outcome depends on a small group's decision
-   *
-   * ALLOWED:
-   * ✅ Public company earnings (many stakeholders, SEC oversight)
-   * ✅ Sports outcomes (regulated, large teams)
-   * ✅ Elections (public, regulated)
-   * ✅ Weather (natural, uncontrollable)
+   * HARD BAN 5: Manipulable Outcomes
    */
   MANIPULATION_RISK: {
     name: 'Manipulation Prevention',
     requirement: 'Creator must not be able to directly influence outcome',
     rationale: 'Prevents insider manipulation and unfair markets',
     blockedPatterns: [
-      'will someone',
-      'will anyone',
-      'will a person',
-      'will a user',
-      'purchase proxies',
-      'buy proxies',
-      'x402 payment',
-      'using credits',
+      'will someone', 'will anyone', 'will a person', 'will a user',
+      'purchase proxies', 'buy proxies', 'x402 payment', 'using credits',
     ],
   },
 
   /**
-   * APPROVED DATA SOURCES (v6.3)
-   *
-   * Markets MUST use one of these approved data sources for resolution.
-   * This ensures verifiable, dispute-free outcomes.
+   * HARD BAN 6: Unverifiable
+   */
+  UNVERIFIABLE: {
+    name: 'Unverifiable Terms',
+    blockedPatterns: [
+      'secretly', 'behind the scenes', 'rumored',
+    ],
+  },
+
+  /**
+   * APPROVED DATA SOURCES (v7.2)
    */
   APPROVED_SOURCES: {
-    crypto: ['coingecko', 'coinmarketcap', 'binance', 'coinbase', 'tradingview'],
-    sports: ['espn', 'ufc', 'uefa', 'fifa', 'nba', 'nfl', 'mlb', 'nhl', 'atp', 'wta'],
-    weather: ['nws', 'jma', 'met office', 'weather.gov', 'accuweather'],
-    politics: ['ap news', 'reuters', 'associated press', 'official government'],
-    finance: ['sec', 'nasdaq', 'nyse', 'yahoo finance', 'bloomberg'],
-    social: ['twitter/x official', 'verified account'],
+    esports: ['hltv', 'hltv.org', 'lolesports', 'lolesports.com', 'liquipedia', 'vlr.gg', 'dotabuff'],
+    mma_boxing: ['ufc', 'ufc.com', 'espn', 'sherdog', 'tapology'],
+    sports: ['nfl', 'nba', 'mlb', 'nhl', 'fifa', 'uefa', 'espn', 'premierleague', 'fia'],
+    awards: ['academy awards', 'recording academy', 'the game awards'],
+    politics: ['ap news', 'reuters', 'associated press', 'official government', 'congress.gov', 'federal reserve'],
+    entertainment: ['netflix top 10', 'billboard', 'box office mojo', 'metacritic', 'rotten tomatoes'],
+    weather: ['nws', 'noaa', 'weather.gov', 'nhc', 'met office', 'jma'],
+    tech: ['apple.com', 'official press release', 'sec filings'],
+    finance: ['federal reserve', 'bls', 'fred', 'cme fedwatch', 'sec'],
+    reality_tv: ['official broadcast', 'network', 'streaming platform'],
   },
 };
 
@@ -209,15 +190,16 @@ export interface ParimutuelValidationResult {
 }
 
 /**
- * Validate market against parimutuel rules
+ * Validate market against parimutuel rules v7.2
  * Returns BLOCKED=true if market violates mandatory rules
  */
 export function validateParimutuelRules(params: {
   question: string;
   closingTime: Date;
-  marketType?: 'event' | 'measurement';
-  eventTime?: Date;
-  measurementStart?: Date;
+  scheduledMoment?: Date;      // The specific moment when outcome is revealed (Type A)
+  marketType?: 'event' | 'measurement';  // kept for backwards compat
+  eventTime?: Date;            // alias for scheduledMoment
+  measurementStart?: Date;     // Start of measurement period (Type B)
   layer: 'official' | 'lab' | 'private';
 }): ParimutuelValidationResult {
   const errors: string[] = [];
@@ -225,66 +207,65 @@ export function validateParimutuelRules(params: {
   const ruleViolations: ParimutuelValidationResult['ruleViolations'] = [];
   const rulesChecked: string[] = [];
 
-  // Only strictly enforce for Lab markets
   const isLabMarket = params.layer === 'lab';
+  const questionLower = params.question.toLowerCase();
 
   // =========================================================================
   // CHECK: Market Type Classification
   // =========================================================================
   rulesChecked.push('Market Type Classification');
 
-  const hasEventTime = !!params.eventTime;
-  const hasMeasurementStart = !!params.measurementStart;
-  const isEventBased = params.marketType === 'event' || hasEventTime;
-  const isMeasurementBased = params.marketType === 'measurement' || hasMeasurementStart;
+  const scheduledMoment = params.scheduledMoment || params.eventTime;
+  const isTypeA = !!scheduledMoment;
+  const isTypeB = !!params.measurementStart;
 
-  if (isLabMarket && !isEventBased && !isMeasurementBased) {
+  if (isLabMarket && !isTypeA && !isTypeB) {
     ruleViolations.push({
       rule: 'Market Classification',
-      description: 'Lab markets MUST specify either event_time (Rule A) or measurement_start (Rule B). ' +
-        'Without this, the market cannot be validated for fair betting windows.',
+      description: 'v7.2 requires either event_time/scheduled_moment (Type A) or measurement_start (Type B). ' +
+        'Type A: outcome revealed at scheduled event (fight end, ceremony, announcement). ' +
+        'Type B: data measured over defined period (chart tracking week, opening weekend). ' +
+        'Without this, market cannot be validated.',
       severity: 'CRITICAL',
     });
-    errors.push('BLOCKED: Market must be classified as event-based (with event_time) or measurement-based (with measurement_start)');
+    errors.push('BLOCKED: Must specify event_time (Type A) or measurement_start (Type B)');
   }
 
   // =========================================================================
-  // CHECK: Rule A - Event Buffer
+  // CHECK: Type A - Event Buffer (24h minimum)
   // =========================================================================
-  if (isEventBased && params.eventTime) {
-    rulesChecked.push('Rule A: Event Buffer');
+  if (isTypeA && scheduledMoment) {
+    rulesChecked.push('Type A: 24h Buffer');
 
-    const bufferMs = params.eventTime.getTime() - params.closingTime.getTime();
+    const bufferMs = scheduledMoment.getTime() - params.closingTime.getTime();
     const bufferHours = bufferMs / (1000 * 60 * 60);
 
-    if (bufferHours < PARIMUTUEL_RULES.RULE_A.minBufferHours) {
+    if (bufferHours < PARIMUTUEL_RULES.TYPE_A.minBufferHours) {
       ruleViolations.push({
-        rule: 'Rule A',
-        description: `Event buffer is ${bufferHours.toFixed(1)}h but minimum is ${PARIMUTUEL_RULES.RULE_A.minBufferHours}h. ` +
-          `Betting must close at least 12 hours BEFORE the event to prevent information advantage.`,
+        rule: 'Type A Buffer',
+        description: `Buffer is ${bufferHours.toFixed(1)}h but minimum is 24h. ` +
+          `Betting must close at least 24 hours BEFORE the scheduled event.`,
         severity: 'CRITICAL',
       });
-      errors.push(`BLOCKED: Betting must close ${PARIMUTUEL_RULES.RULE_A.minBufferHours}+ hours before event (currently ${bufferHours.toFixed(1)}h)`);
-    } else if (bufferHours < 18) {
-      warnings.push(`Event buffer is ${bufferHours.toFixed(1)}h. Recommend 18-24h for safety margin.`);
+      errors.push(`BLOCKED: Betting must close 24+ hours before event (currently ${bufferHours.toFixed(1)}h)`);
     }
   }
 
   // =========================================================================
-  // CHECK: Rule B - Measurement Period
+  // CHECK: Type B - Betting closes BEFORE measurement starts
   // =========================================================================
-  if (isMeasurementBased && params.measurementStart) {
-    rulesChecked.push('Rule B: Measurement Period');
+  if (isTypeB && params.measurementStart) {
+    rulesChecked.push('Type B: Close Before Measurement');
 
     if (params.closingTime >= params.measurementStart) {
       const overlapMs = params.closingTime.getTime() - params.measurementStart.getTime();
       const overlapHours = overlapMs / (1000 * 60 * 60);
 
       ruleViolations.push({
-        rule: 'Rule B',
-        description: `CRITICAL VIOLATION: Betting closes ${overlapHours.toFixed(1)}h AFTER measurement starts! ` +
-          `This allows bettors to bet with foreknowledge of the outcome. ` +
-          `Betting MUST close BEFORE the measurement period begins.`,
+        rule: 'Type B Timing',
+        description: `CRITICAL: Betting closes ${overlapHours.toFixed(1)}h AFTER measurement starts! ` +
+          `Betting MUST close BEFORE the measurement period begins. ` +
+          `Bettors would have information advantage during the measurement period.`,
         severity: 'CRITICAL',
       });
       errors.push(`BLOCKED: Betting must close BEFORE measurement starts (currently closes ${overlapHours.toFixed(1)}h AFTER)`);
@@ -292,103 +273,128 @@ export function validateParimutuelRules(params: {
   }
 
   // =========================================================================
-  // CHECK: Data Source
+  // CHECK: Price Prediction Ban
   // =========================================================================
-  rulesChecked.push('Verifiable Data Source');
+  rulesChecked.push('Price Prediction Ban');
 
-  const questionLower = params.question.toLowerCase();
-  const hasDataSource =
-    questionLower.includes('source:') ||
-    questionLower.includes('coingecko') ||
-    questionLower.includes('coinmarketcap') ||
-    questionLower.includes('official') ||
-    questionLower.includes('nws') ||
-    questionLower.includes('jma') ||
-    questionLower.includes('ufc') ||
-    questionLower.includes('uefa') ||
-    questionLower.includes('fifa') ||
-    questionLower.includes('nba') ||
-    questionLower.includes('nfl') ||
-    questionLower.includes('mlb') ||
-    // Sports/events typically have implied official sources
-    questionLower.includes(' win ') ||
-    questionLower.includes(' defeat ') ||
-    questionLower.includes(' advance ') ||
-    questionLower.includes('championship') ||
-    questionLower.includes('election');
+  const pricePatterns = PARIMUTUEL_RULES.PRICE_BAN.blockedPatterns;
+  const foundPrice = pricePatterns.filter(p => questionLower.includes(p.toLowerCase()));
 
-  if (isLabMarket && !hasDataSource) {
-    warnings.push(
-      'Recommended: Include data source in question (e.g., "(Source: CoinGecko)" or "(Official: UEFA)"). ' +
-      'This ensures objective resolution.'
-    );
+  if (foundPrice.length > 0) {
+    ruleViolations.push({
+      rule: 'Price Ban',
+      description: `BLOCKED: Price prediction markets are banned. Found: "${foundPrice.join('", "')}". ` +
+        `Prices are continuous and observable — pool just mirrors what everyone can see.`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Price prediction market. Terms: ${foundPrice.join(', ')}`);
   }
 
   // =========================================================================
-  // CHECK: Clear Criteria
+  // CHECK: Real-Time Observable Measurement Ban
   // =========================================================================
-  rulesChecked.push('Clear Resolution Criteria');
+  rulesChecked.push('Real-Time Measurement Ban');
 
-  const hasNumericThreshold =
-    /\$[\d,]+/.test(params.question) ||  // Dollar amounts
-    /\d+%/.test(params.question) ||      // Percentages
-    /above|below|over|under|at least|more than|less than/i.test(params.question);
+  const measurePatterns = PARIMUTUEL_RULES.REALTIME_MEASUREMENT_BAN.blockedPatterns;
+  const foundMeasure = measurePatterns.filter(p => questionLower.includes(p.toLowerCase()));
 
-  const hasClearBinaryOutcome =
-    /will .+ (win|lose|defeat|advance|qualify|score|achieve)/i.test(params.question) ||
-    /will .+ (snow|rain|happen|occur)/i.test(params.question);
-
-  if (isLabMarket && !hasNumericThreshold && !hasClearBinaryOutcome) {
-    warnings.push(
-      'Question should have clear numeric threshold or binary outcome. ' +
-      'Example: "above $X", "at least Y goals", "will Team A win"'
-    );
+  if (isLabMarket && foundMeasure.length > 0) {
+    ruleViolations.push({
+      rule: 'Real-Time Measurement',
+      description: `BLOCKED: Real-time observable measurement detected: "${foundMeasure.join('", "')}". ` +
+        `Metrics like tweet counts, stream hours, and follower counts are observable in real-time. ` +
+        `Use Type B markets with defined periods (Billboard chart, box office weekend) where betting closes before the period starts.`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Real-time observable measurement. Terms: ${foundMeasure.join(', ')}`);
   }
 
   // =========================================================================
-  // CHECK: Subjective/Unverifiable Outcomes (v6.3)
+  // CHECK: Open-Window Deadline Ban
+  // =========================================================================
+  rulesChecked.push('Open-Window Deadline Ban');
+
+  const openWindowPatterns = PARIMUTUEL_RULES.OPEN_WINDOW_BAN.blockedPatterns;
+  const foundOpenWindow = openWindowPatterns.filter(p => questionLower.includes(p.toLowerCase()));
+
+  // Also check for generic "before/by [date]" pattern with observable events
+  const monthPattern = 'january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec';
+  const dayPattern = 'monday|tuesday|wednesday|thursday|friday|saturday|sunday';
+  const datePattern = `${monthPattern}|${dayPattern}|\\d{4}|\\d{1,2}[/\\-]\\d{1,2}|next\\s+week|end\\s+of|q[1-4]`;
+  const hasBeforePattern = new RegExp(`\\b(?:before|by)\\s+(?:${datePattern})`, 'i').test(params.question);
+  const hasWithinPattern = /\bwithin\s+\d+\s*(hours?|days?|weeks?|months?)/i.test(params.question);
+
+  if (isLabMarket && (foundOpenWindow.length > 0 || hasBeforePattern || hasWithinPattern)) {
+    const detectedTerms = [
+      ...foundOpenWindow,
+      ...(hasBeforePattern ? ['before/by [date]'] : []),
+      ...(hasWithinPattern ? ['within [period]'] : []),
+    ];
+    ruleViolations.push({
+      rule: 'Open-Window Ban',
+      description: `BLOCKED: Open-window deadline market detected: "${detectedTerms.join('", "')}". ` +
+        `If the event can happen anytime and is instantly observable, the pool gets destroyed. ` +
+        `Only markets with a SPECIFIC SCHEDULED revelation moment are allowed.`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Open-window deadline market. Terms: ${detectedTerms.join(', ')}`);
+  }
+
+  // =========================================================================
+  // CHECK: Subjective/Unverifiable Outcomes
   // =========================================================================
   rulesChecked.push('Objective Verifiability');
 
   const subjectivePatterns = PARIMUTUEL_RULES.SUBJECTIVE_OUTCOME.blockedPatterns;
-  const foundSubjective = subjectivePatterns.filter(pattern =>
-    questionLower.includes(pattern.toLowerCase())
-  );
+  const foundSubjective = subjectivePatterns.filter(p => questionLower.includes(p.toLowerCase()));
 
   if (isLabMarket && foundSubjective.length > 0) {
     ruleViolations.push({
       rule: 'Subjective Outcome',
-      description: `BLOCKED: Question contains unverifiable/subjective terms: "${foundSubjective.join('", "')}". ` +
-        `Markets must have outcomes that can be objectively verified by a third party using public records. ` +
-        `Avoid questions about AI agents, personal achievements, or vague success metrics.`,
+      description: `BLOCKED: Unverifiable/subjective terms: "${foundSubjective.join('", "')}". ` +
+        `Markets must have outcomes verifiable by third party using public records.`,
       severity: 'CRITICAL',
     });
-    errors.push(`BLOCKED: Unverifiable outcome detected. Terms: ${foundSubjective.join(', ')}`);
+    errors.push(`BLOCKED: Unverifiable outcome. Terms: ${foundSubjective.join(', ')}`);
   }
 
   // =========================================================================
-  // CHECK: Manipulation Risk (v6.3)
+  // CHECK: Manipulation Risk
   // =========================================================================
   rulesChecked.push('Manipulation Prevention');
 
   const manipulationPatterns = PARIMUTUEL_RULES.MANIPULATION_RISK.blockedPatterns;
-  const foundManipulation = manipulationPatterns.filter(pattern =>
-    questionLower.includes(pattern.toLowerCase())
-  );
+  const foundManipulation = manipulationPatterns.filter(p => questionLower.includes(p.toLowerCase()));
 
   if (isLabMarket && foundManipulation.length > 0) {
     ruleViolations.push({
       rule: 'Manipulation Risk',
-      description: `BLOCKED: Question has manipulation risk with terms: "${foundManipulation.join('", "')}". ` +
-        `Market creators cannot create markets about outcomes they could directly influence. ` +
-        `Use markets about public events, regulated competitions, or natural phenomena instead.`,
+      description: `BLOCKED: Manipulation risk with terms: "${foundManipulation.join('", "')}". ` +
+        `Market creators cannot create markets about outcomes they could directly influence.`,
       severity: 'CRITICAL',
     });
-    errors.push(`BLOCKED: Manipulation risk detected. Terms: ${foundManipulation.join(', ')}`);
+    errors.push(`BLOCKED: Manipulation risk. Terms: ${foundManipulation.join(', ')}`);
   }
 
   // =========================================================================
-  // CHECK: Approved Data Source (v6.3 - stricter)
+  // CHECK: Unverifiable
+  // =========================================================================
+  rulesChecked.push('Unverifiable Terms');
+
+  const unverifiablePatterns = PARIMUTUEL_RULES.UNVERIFIABLE.blockedPatterns;
+  const foundUnverifiable = unverifiablePatterns.filter(p => questionLower.includes(p.toLowerCase()));
+
+  if (isLabMarket && foundUnverifiable.length > 0) {
+    ruleViolations.push({
+      rule: 'Unverifiable',
+      description: `BLOCKED: Unverifiable terms: "${foundUnverifiable.join('", "')}".`,
+      severity: 'CRITICAL',
+    });
+    errors.push(`BLOCKED: Unverifiable terms. Terms: ${foundUnverifiable.join(', ')}`);
+  }
+
+  // =========================================================================
+  // CHECK: Approved Data Source
   // =========================================================================
   rulesChecked.push('Approved Data Source');
 
@@ -397,19 +403,24 @@ export function validateParimutuelRules(params: {
     questionLower.includes(source.toLowerCase())
   );
 
-  // Check for implied sources (sports teams, crypto assets, weather locations)
+  const hasDataSource = questionLower.includes('source:') || questionLower.includes('official');
+
+  // Check for implied sources
   const hasImpliedSource =
-    /\b(btc|eth|sol|bitcoin|ethereum|solana)\b/i.test(params.question) ||  // Crypto (implies CoinGecko)
-    /\b(ufc|nba|nfl|mlb|nhl|champions league|world cup|super bowl)\b/i.test(params.question) ||  // Sports
-    /\b(tokyo|london|new york|los angeles|paris|snow|rain|temperature)\b/i.test(params.question) ||  // Weather
-    /\b(election|president|congress|parliament|vote)\b/i.test(params.question);  // Politics
+    /\b(ufc|nba|nfl|mlb|nhl|champions league|world cup|super bowl|cs2|counter-strike|league of legends|lol|lck|lec|lpl|dota|valorant|vct|iem|esl|blast|pgl)\b/i.test(params.question) ||
+    /\b(oscar|grammy|emmy|golden globe|game awards)\b/i.test(params.question) ||
+    /\b(fomc|fed|federal reserve|congress|senate)\b/i.test(params.question) ||
+    /\b(billboard|netflix top 10|box office)\b/i.test(params.question) ||
+    /\b(snow|rain|temperature|hurricane|weather)\b/i.test(params.question) ||
+    /\b(wwdc|ces|apple|google i\/o)\b/i.test(params.question) ||
+    /\b(survivor|bachelor|bachelorette|big brother|amazing race)\b/i.test(params.question) ||
+    /\b(f1|formula 1|nascar|grand prix)\b/i.test(params.question);
 
   if (isLabMarket && !hasApprovedSource && !hasImpliedSource && !hasDataSource) {
     ruleViolations.push({
       rule: 'Data Source',
       description: `BLOCKED: No verifiable data source specified or implied. ` +
-        `Markets MUST include a data source like "(Source: CoinGecko)", "(Official: ESPN)", etc. ` +
-        `Approved sources: ${allApprovedSources.slice(0, 10).join(', ')}...`,
+        `Markets MUST include a data source like "(Source: ESPN)", "(Source: HLTV.org)", etc.`,
       severity: 'CRITICAL',
     });
     errors.push('BLOCKED: Must specify verifiable data source for resolution');
@@ -436,77 +447,74 @@ export function validateParimutuelRules(params: {
 // =============================================================================
 
 export const PARIMUTUEL_RULES_DOCUMENTATION = `
-# BAOZI PARIMUTUEL MARKET RULES v6.3
+# BAOZI PARIMUTUEL MARKET RULES v7.2
 
-## ⚠️ STRICT ENFORCEMENT - VIOLATIONS BLOCK MARKET CREATION
+## STRICT ENFORCEMENT - VIOLATIONS BLOCK MARKET CREATION
 
-### Rule A: Event-Based Markets
-Markets about specific events (sports, elections, announcements):
-- Betting MUST close AT LEAST 12 hours BEFORE the event
-- You MUST specify event_time parameter
-- Recommended buffer: 18-24 hours
+### TWO ALLOWED MARKET TYPES
 
-✅ ALLOWED: "Will Team A win vs Team B? (Official: ESPN)"
-❌ BLOCKED: Closing time overlaps with event
+**Type A: Scheduled Event** — Outcome revealed at one moment (fight end, ceremony, announcement).
+Rule: betting closes 24h+ BEFORE the event.
 
-### Rule B: Measurement-Period Markets
-Markets about measured values (prices, temperatures, metrics):
-- Betting MUST close BEFORE the measurement period starts
-- You MUST specify measurement_start parameter
+**Type B: Measurement Period** — Data collected over defined period (chart week, opening weekend).
+Rule: betting closes BEFORE the measurement period starts.
 
-✅ ALLOWED: "Will BTC be above $100k at 00:00 UTC Feb 1? (Source: CoinGecko)"
-❌ BLOCKED: Betting closes after measurement starts
+### BANNED (No Exceptions)
 
-### Rule C: Objective Verifiability (v6.3 - NEW)
-Outcomes MUST be objectively verifiable by third party using public records.
+1. **Price Predictions** — Prices are continuous and observable. Pool mirrors what everyone sees.
+   BLOCKED: "price above", "price below", "trading above", "market cap above", etc.
 
-❌ BLOCKED TERMS (will reject market):
-- "ai agent", "an agent", "autonomously"
-- "will I", "will we", "will my", "will our" (self-referential)
-- "become popular", "go viral", "be successful"
-- "perform well", "be the best", "breakthrough"
+2. **Open-Window Deadline Markets** — Event can happen anytime, instantly observable.
+   BLOCKED: "before [date]" (when event is instantly observable), "resign before",
+   "release before", "tweet about before", "IPO before", etc.
+   WHY: "Will Drake drop album before March 1?" — drops Feb 14, everyone sees it, pool floods, dead.
 
-✅ ALLOWED: Questions about public events, regulated competitions, official records
+3. **Real-Time Observable Measurements** — Tweet counts, stream hours, follower counts.
+   BLOCKED: "tweet count", "how many tweets", "stream hours", "follower count", etc.
+   NOTE: Defined-period measurements (Billboard chart week, box office weekend) ARE allowed
+   if betting closes before the period starts.
 
-### Rule D: Manipulation Prevention (v6.3 - NEW)
-Creators CANNOT make markets about outcomes they can influence.
+4. **Subjective/Unverifiable** — BLOCKED: "go viral", "be successful", "will I", etc.
 
-❌ BLOCKED TERMS:
-- "will someone", "will anyone", "will a person"
-- "purchase proxies", "buy proxies", "x402 payment"
+5. **Manipulable** — BLOCKED: "will someone", "will anyone", "purchase proxies", etc.
 
-✅ ALLOWED: Sports (regulated), weather (uncontrollable), elections (public)
+### WHAT WORKS
 
-### Rule E: Approved Data Sources (v6.3 - REQUIRED)
-Markets MUST use an approved data source:
+TYPE A (Scheduled Events):
+- Sports/MMA: "Will [fighter] win UFC 315?" (fight ends at scheduled time)
+- Esports: "Who wins CS2 Grand Final?" (match ends at scheduled time)
+- Awards: "Who wins Best Picture?" (announced at ceremony)
+- Government: "Will Fed cut rates at FOMC?" (announced at 2 PM ET)
+- Weather: "Will it snow in NYC on Feb 28?" (daily summary after date)
+- Reality TV: "Who eliminated on Survivor?" (episode airs at scheduled time)
 
-CRYPTO: CoinGecko, CoinMarketCap, Binance, Coinbase, TradingView
-SPORTS: ESPN, UFC, UEFA, FIFA, NBA, NFL, MLB, NHL, ATP, WTA
-WEATHER: NWS, JMA, Met Office, Weather.gov, AccuWeather
-POLITICS: AP News, Reuters, Official Government
-FINANCE: SEC, NASDAQ, NYSE, Yahoo Finance, Bloomberg
+TYPE B (Measurement Periods):
+- Charts: "Billboard Hot 100 #1?" (tracking Fri-Thu, bet closes before Friday)
+- Charts: "Netflix Top 10 #1?" (tracking Mon-Sun, bet closes before Monday)
+- Box Office: "Opening weekend #1?" (Fri-Sun, bet closes before Friday)
+- Album: "Will [album] debut #1?" (first week sales, bet closes before release)
+- Economic: "BLS unemployment rate?" (measures past month, published first Friday)
 
-❌ BLOCKED: No source = No market
+### RACE MARKETS (2-10 outcomes) — PREFERRED FORMAT
 
-## EXAMPLE VALID MARKET
+More outcomes = more spread = better underdog payouts.
+Best for: awards, charts, eliminations, tournaments, FOMC decisions.
 
-Question: "Will BTC be above $120,000 at 00:00 UTC Feb 15, 2026? (Source: CoinGecko)"
-Type: measurement
-Measurement Start: 2026-02-15T00:00:00Z
-Closing Time: 2026-02-14T22:00:00Z (2h before)
-✅ APPROVED - Clear criteria, approved source, proper timing
+### APPROVED DATA SOURCES
 
-## EXAMPLE BLOCKED MARKETS
+ESPORTS: HLTV.org, lolesports.com, Liquipedia, vlr.gg
+SPORTS: ESPN, UFC.com, NFL.com, NBA.com, MLB.com, FIA
+AWARDS: Academy Awards, Recording Academy, The Game Awards, Eurovision
+GOVERNMENT: Federal Reserve, Congress.gov, AP News, Reuters
+CHARTS: Billboard.com, Netflix Top 10, Box Office Mojo
+WEATHER: NOAA, NWS (weather.gov), NHC
+TECH: Apple.com/newsroom, official press releases
 
-❌ "Will an AI agent autonomously purchase proxies?"
-   → BLOCKED: Contains "ai agent", "autonomously", "purchase proxies"
-   → Not verifiable, manipulation risk
+### QUICK TESTS
 
-❌ "Will crypto go up?"
-   → BLOCKED: No specific threshold, no data source
-
-❌ "Will I become successful?"
-   → BLOCKED: Self-referential, subjective
+Type A: "Is there a scheduled event when the answer is revealed?" YES -> Proceed
+Type B: "Is there a defined measurement period, and does betting close before it starts?" YES -> Proceed
+Open-Window: "If this happened tomorrow at 3 AM, would everyone instantly know?" YES -> BLOCKED
 `;
 
 /**

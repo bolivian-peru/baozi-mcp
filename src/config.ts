@@ -76,7 +76,7 @@ export const DISCRIMINATORS = {
   USER_POSITION: Buffer.from([251, 248, 209, 245, 83, 234, 17, 27]),
   USER_POSITION_BASE58: 'j9SjDYAWesU',
 
-  // Race Market - SHA256("account:RaceMarket")
+  // Race Market
   RACE_MARKET: Buffer.from([235, 196, 111, 75, 230, 113, 118, 238]),
 
   // Race Position
@@ -86,16 +86,16 @@ export const DISCRIMINATORS = {
   // Global Config
   GLOBAL_CONFIG: Buffer.from([149, 8, 156, 202, 160, 252, 176, 217]),
 
-  // Creator Profile - SHA256("account:CreatorProfile")
+  // Creator Profile
   CREATOR_PROFILE: Buffer.from([251, 250, 184, 111, 214, 178, 32, 221]),
 
-  // Affiliate - SHA256("account:Affiliate")
+  // Affiliate
   AFFILIATE: Buffer.from([136, 95, 107, 149, 36, 195, 146, 35]),
 
-  // Referred User (for affiliate tracking) - SHA256("account:ReferredUser")
+  // Referred User (for affiliate tracking)
   REFERRED_USER: Buffer.from([74, 220, 238, 29, 172, 145, 111, 223]),
 
-  // Dispute Meta - SHA256("account:DisputeMeta")
+  // Dispute Meta
   DISPUTE_META: Buffer.from([172, 110, 190, 78, 173, 57, 254, 229]),
 } as const;
 
@@ -131,6 +131,140 @@ export const BET_LIMITS = {
   MIN_BET_LAMPORTS: 10_000_000,   // 0.01 SOL
   MAX_BET_LAMPORTS: 100_000_000_000, // 100 SOL
 } as const;
+
+// =============================================================================
+// SAFETY CONFIGURATION (Safe-by-Default)
+// =============================================================================
+
+/**
+ * Live mode must be explicitly enabled via BAOZI_LIVE=1
+ * Without it, all write tools (build_*) return a safe-mode error.
+ */
+export const LIVE_MODE = process.env.BAOZI_LIVE === '1';
+
+/**
+ * Max bet override — reads BAOZI_MAX_BET_SOL, clamped to hardcoded max of 100 SOL.
+ * Can only LOWER the max, never raise above 100.
+ */
+const HARDCODED_MAX_BET_SOL = 100;
+const envMaxBet = process.env.BAOZI_MAX_BET_SOL
+  ? parseFloat(process.env.BAOZI_MAX_BET_SOL)
+  : HARDCODED_MAX_BET_SOL;
+export const MAX_BET_SOL_OVERRIDE = Math.min(
+  Number.isFinite(envMaxBet) && envMaxBet > 0 ? envMaxBet : HARDCODED_MAX_BET_SOL,
+  HARDCODED_MAX_BET_SOL
+);
+
+/**
+ * Daily spend limit — reads BAOZI_DAILY_LIMIT_SOL. null = unlimited.
+ */
+const envDailyLimit = process.env.BAOZI_DAILY_LIMIT_SOL
+  ? parseFloat(process.env.BAOZI_DAILY_LIMIT_SOL)
+  : null;
+export const DAILY_LIMIT_SOL: number | null =
+  envDailyLimit !== null && Number.isFinite(envDailyLimit) && envDailyLimit > 0
+    ? envDailyLimit
+    : null;
+
+/**
+ * Base URL for sign-link and API calls
+ */
+export const BAOZI_BASE_URL = process.env.BAOZI_BASE_URL || 'https://baozi.bet';
+
+/**
+ * Mandate ID for delegated authorization (optional)
+ * When set, write tools will verify mandate limits before building transactions.
+ */
+export const MANDATE_ID = process.env.BAOZI_MANDATE_ID || null;
+
+/**
+ * Set of all write tool names that require BAOZI_LIVE=1
+ */
+export const WRITE_TOOLS: Set<string> = new Set([
+  'build_bet_transaction',
+  'build_race_bet_transaction',
+  'build_claim_winnings_transaction',
+  'build_claim_refund_transaction',
+  'build_claim_race_winnings_transaction',
+  'build_claim_race_refund_transaction',
+  'build_claim_affiliate_transaction',
+  'build_batch_claim_transaction',
+  'build_create_lab_market_transaction',
+  'build_create_private_market_transaction',
+  'build_create_race_market_transaction',
+  'build_propose_resolution_transaction',
+  'build_resolve_market_transaction',
+  'build_finalize_resolution_transaction',
+  'build_propose_race_resolution_transaction',
+  'build_resolve_race_transaction',
+  'build_finalize_race_resolution_transaction',
+  'build_flag_dispute_transaction',
+  'build_flag_race_dispute_transaction',
+  'build_vote_council_transaction',
+  'build_vote_council_race_transaction',
+  'build_change_council_vote_transaction',
+  'build_change_council_vote_race_transaction',
+  'build_add_to_whitelist_transaction',
+  'build_remove_from_whitelist_transaction',
+  'build_create_race_whitelist_transaction',
+  'build_add_to_race_whitelist_transaction',
+  'build_remove_from_race_whitelist_transaction',
+  'build_create_creator_profile_transaction',
+  'build_update_creator_profile_transaction',
+  'build_claim_creator_transaction',
+  'build_close_market_transaction',
+  'build_extend_market_transaction',
+  'build_close_race_market_transaction',
+  'build_extend_race_market_transaction',
+  'build_cancel_market_transaction',
+  'build_cancel_race_transaction',
+  'build_register_affiliate_transaction',
+  'build_toggle_affiliate_transaction',
+  'simulate_transaction',
+]);
+
+// =============================================================================
+// DAILY SPEND TRACKER (in-memory, resets on server restart)
+// =============================================================================
+
+const dailySpendState = {
+  date: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+  totalSpentSol: 0,
+};
+
+function getTodayKey(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
+/** Record SOL spent on a bet */
+export function recordSpend(amountSol: number): void {
+  const today = getTodayKey();
+  if (dailySpendState.date !== today) {
+    dailySpendState.date = today;
+    dailySpendState.totalSpentSol = 0;
+  }
+  dailySpendState.totalSpentSol += amountSol;
+}
+
+/** Get total SOL spent today */
+export function getDailySpend(): number {
+  const today = getTodayKey();
+  if (dailySpendState.date !== today) {
+    dailySpendState.date = today;
+    dailySpendState.totalSpentSol = 0;
+  }
+  return dailySpendState.totalSpentSol;
+}
+
+/** Check if daily limit would be exceeded. Returns error message or null. */
+export function checkDailyLimit(amountSol: number): string | null {
+  if (DAILY_LIMIT_SOL === null) return null;
+  const currentSpend = getDailySpend();
+  if (currentSpend + amountSol > DAILY_LIMIT_SOL) {
+    return `Daily spend limit exceeded. Limit: ${DAILY_LIMIT_SOL} SOL, spent today: ${currentSpend.toFixed(4)} SOL, requested: ${amountSol} SOL`;
+  }
+  return null;
+}
 
 // =============================================================================
 // TIMING CONSTANTS

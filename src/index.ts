@@ -7,7 +7,7 @@
  *
  * Features:
  * - Read markets, positions, quotes
- * - Validate market timing (v6.3 rules)
+ * - Validate market timing (v7.2 rules)
  * - Build unsigned bet transactions
  * - Simulate transactions before signing
  *
@@ -41,7 +41,10 @@ import {
 
 import { TOOLS, handleTool } from './tools.js';
 import { RESOURCES, handleResource } from './resources.js';
-import { PROGRAM_ID, NETWORK, IS_MAINNET, RPC_ENDPOINT } from './config.js';
+import {
+  PROGRAM_ID, NETWORK, IS_MAINNET, RPC_ENDPOINT,
+  LIVE_MODE, WRITE_TOOLS, MAX_BET_SOL_OVERRIDE, DAILY_LIMIT_SOL,
+} from './config.js';
 
 const VERSION = '2.0.0';
 
@@ -59,8 +62,20 @@ const server = new Server(
   }
 );
 
-// List available tools
+// List available tools (prefix write tools with safety notice if not in live mode)
 server.setRequestHandler(ListToolsRequestSchema, async () => {
+  if (!LIVE_MODE) {
+    const annotatedTools = TOOLS.map(tool => {
+      if (WRITE_TOOLS.has(tool.name)) {
+        return {
+          ...tool,
+          description: `[REQUIRES BAOZI_LIVE=1] ${tool.description}`,
+        };
+      }
+      return tool;
+    });
+    return { tools: annotatedTools };
+  }
   return { tools: TOOLS };
 });
 
@@ -87,21 +102,21 @@ async function main() {
   await server.connect(transport);
 
   // Log startup info to stderr (stdout is for MCP protocol)
+  const readToolCount = TOOLS.filter(t => !WRITE_TOOLS.has(t.name)).length;
+  const writeToolCount = TOOLS.filter(t => WRITE_TOOLS.has(t.name)).length;
+
   console.error('');
   console.error('='.repeat(60));
   console.error(`Baozi MCP Server v${VERSION}`);
   console.error('='.repeat(60));
   console.error('');
-  console.error(`Network: ${IS_MAINNET ? 'MAINNET' : 'Devnet'} (${NETWORK})`);
+  console.error(`Mode:       ${LIVE_MODE ? 'LIVE (write tools enabled)' : 'SAFE (read-only, set BAOZI_LIVE=1 to enable writes)'}`);
+  console.error(`Network:    ${IS_MAINNET ? 'MAINNET' : 'Devnet'} (${NETWORK})`);
   console.error(`Program ID: ${PROGRAM_ID.toBase58()}`);
-  console.error(`RPC: ${RPC_ENDPOINT.substring(0, 50)}...`);
-  console.error('');
-  console.error('Available Tools:');
-  console.error('-'.repeat(40));
-  TOOLS.forEach(tool => {
-    console.error(`  ${tool.name}`);
-    console.error(`    ${tool.description.substring(0, 70)}...`);
-  });
+  console.error(`RPC:        ${RPC_ENDPOINT.substring(0, 50)}...`);
+  console.error(`Max Bet:    ${MAX_BET_SOL_OVERRIDE} SOL`);
+  console.error(`Daily Limit:${DAILY_LIMIT_SOL !== null ? ` ${DAILY_LIMIT_SOL} SOL` : ' unlimited'}`);
+  console.error(`Tools:      ${TOOLS.length} total (${readToolCount} read, ${writeToolCount} write)`);
   console.error('');
   console.error('Available Resources:');
   console.error('-'.repeat(40));

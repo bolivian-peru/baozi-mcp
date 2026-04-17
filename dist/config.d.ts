@@ -55,6 +55,32 @@ export declare const BET_LIMITS: {
     readonly MIN_BET_LAMPORTS: 10000000;
     readonly MAX_BET_LAMPORTS: 100000000000;
 };
+/**
+ * Live mode must be explicitly enabled via BAOZI_LIVE=1
+ * Without it, all write tools (build_*) return a safe-mode error.
+ */
+export declare const LIVE_MODE: boolean;
+export declare const MAX_BET_SOL_OVERRIDE: number;
+export declare const DAILY_LIMIT_SOL: number | null;
+/**
+ * Base URL for sign-link and API calls
+ */
+export declare const BAOZI_BASE_URL: string;
+/**
+ * Mandate ID for delegated authorization (optional)
+ * When set, write tools will verify mandate limits before building transactions.
+ */
+export declare const MANDATE_ID: string | null;
+/**
+ * Set of all write tool names that require BAOZI_LIVE=1
+ */
+export declare const WRITE_TOOLS: Set<string>;
+/** Record SOL spent on a bet */
+export declare function recordSpend(amountSol: number): void;
+/** Get total SOL spent today */
+export declare function getDailySpend(): number;
+/** Check if daily limit would be exceeded. Returns error message or null. */
+export declare function checkDailyLimit(amountSol: number): string | null;
 export declare const TIMING: {
     readonly BETTING_FREEZE_SECONDS: 300;
     readonly MIN_EVENT_BUFFER_HOURS: 12;
